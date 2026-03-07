@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Event Ease</title>
+    <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
+</head>
+<body class="box-border flex flex-col">
+    <header>
+        <nav class="sticky top-0 flex flex-row justify-between align-items-center px-10  pb-4 pt-4 border-b-1 border-gray-300 w-full shadow-sm">
+
+         <span class="text-lg font-bold">Logo</span>
+         <div class="flex gap-7">
+             <a href="/" class=" font-">Home</a>
+                <a asp-controller="Users" asp-action="Index">User</a>
+                <a asp-controller="Bookings" asp-action="Index">Bookings</a>
+                <a asp-controller="Venues" asp-action="Index">Venues</a>
+                <a asp-controller="CustomerDetails" asp-action="Index">Customer details</a>
+                <a asp-controller="Events" asp-action="Index">Events</a>
+             <a href="/Contact">Contact</a>
+
+         </div>
+        </nav>
+    </header>
+    <div class="pt-20 m-auto">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+   
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

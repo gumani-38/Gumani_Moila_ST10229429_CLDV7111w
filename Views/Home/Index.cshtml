@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    var events = new[]
+       {
+        new { Title = "Music Fest", Date = "12 March", Venue = "125 name", Location = "81 Vlok Street", Description = "Live music and food stalls", SeatsLeft = 140 },
+        new { Title = "Tech Expo", Date = "15 March", Venue = "Tech Dome", Location = "101 Innovation Blvd", Description = "Latest gadgets and demos", SeatsLeft = 85 },
+        new { Title = "Art Fair", Date = "20 March", Venue = "Gallery Hall", Location = "22 Canvas Lane", Description = "Local artists showcase", SeatsLeft = 60 }
+    };
+    }
+
+
+<div class="flex flex-wrap gap-3 justify-center p-6">
+    @foreach (var e in events)
+    {
+        <div class="max-w-md rounded flex flex-row shadow-lg bg-white">
+            <img class="w-[100px] h-full object-cover rounded"
+                 src="https://images.unsplash.com/photo-1769745836625-4cac1ba455a4?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                 alt="Event Image" />
+           <div class="px-2 py-1 grow">
+            <div class="flex flex-row justify-between align-items-center">
+                <div class="font-semibold text-sm">@e.Title</div>
+                <p class="text-gray-500 text-xs font-medium">@e.Date</p>
+                </div>
+
+                <p class="text-gray-500 text-sm font-medium">Venue: @e.Venue</p>
+                <p class="text-gray-500 text-sm font-medium">Location: @e.Location</p>
+                <p class="text-gray-700 text-sm">@e.Description</p>
+
+            <div class=" flex items-center justify-between">
+                <p><strong class="text-red-700 text-sm">@e.SeatsLeft</strong> left!</p>
+                <a href="#" class="bg-black text-white px-3 py-1 rounded-sm text-xs text-center hover:bg-gray-800">
+                    Book
+                </a>
+            </div>
+            </div>
+        </div>
+    }
+</div>
+

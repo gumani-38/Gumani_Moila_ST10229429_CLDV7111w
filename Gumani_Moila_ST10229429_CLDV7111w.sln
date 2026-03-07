@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gumani_Moila_ST10229429_CLDV7111w", "Gumani_Moila_ST10229429_CLDV7111w.csproj", "{672B792E-8971-4993-94F5-431DD3377C0F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{672B792E-8971-4993-94F5-431DD3377C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{672B792E-8971-4993-94F5-431DD3377C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672B792E-8971-4993-94F5-431DD3377C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{672B792E-8971-4993-94F5-431DD3377C0F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A84E1279-1B38-4FF7-AF51-872A837BF13C}
+	EndGlobalSection
+EndGlobal
