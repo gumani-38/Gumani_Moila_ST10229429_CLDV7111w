@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Gumani_Moila_ST10229429_CLDV7111w.Data;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 
+
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 {
     public class UsersController : Controller
@@ -54,10 +55,11 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserName,UserLastName,UserEmail,UserPassword,UserPhone,IsAdmin,CreatedAt")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,UserName,UserLastName,UserEmail,UserPassword,UserPhone")] User user)
         {
             if (ModelState.IsValid)
             {
+                user.UserPassword = BCrypt.Net.BCrypt.HashPassword(user.UserPassword);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

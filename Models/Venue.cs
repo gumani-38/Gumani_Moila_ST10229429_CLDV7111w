@@ -18,13 +18,14 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
         public string VenueImageUrl { get; set; }
 
         // Default value set to current date/time
+        [DisplayFormat(DataFormatString = "{0:dd MMM yy}")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [ForeignKey("User")]
         public int UserId { get; set; }
 
         // Navigation property for the foreign key
-        public User User { get; set; }
+        public User? user { get; set; }
 
     }
 }

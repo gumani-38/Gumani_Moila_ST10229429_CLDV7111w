@@ -22,7 +22,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // GET: Venues
         public async Task<IActionResult> Index()
         {
-            var eventEaseContext = _context.Venue.Include(v => v.User);
+            var eventEaseContext = _context.Venue.Include(v => v.user);
             return View(await eventEaseContext.ToListAsync());
         }
 
@@ -35,7 +35,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             }
 
             var venue = await _context.Venue
-                .Include(v => v.User)
+                .Include(v => v.user)
                 .FirstOrDefaultAsync(m => m.VenueId == id);
             if (venue == null)
             {
@@ -57,17 +57,20 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl,CreatedAt,UserId")] Venue venue)
+        public async Task<IActionResult> Create([Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl,UserId")] Venue venue)
         {
+            venue.UserId = 1;
+
             if (ModelState.IsValid)
             {
                 _context.Add(venue);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", venue.UserId);
+            ViewData ["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", venue.UserId);
             return View(venue);
         }
+
 
         // GET: Venues/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -131,7 +134,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             }
 
             var venue = await _context.Venue
-                .Include(v => v.User)
+                .Include(v => v.user)
                 .FirstOrDefaultAsync(m => m.VenueId == id);
             if (venue == null)
             {

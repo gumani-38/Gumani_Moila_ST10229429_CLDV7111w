@@ -3,50 +3,49 @@
 @{
     ViewData["Title"] = "Create";
 }
+<div class="w-full flex justify-start mb-20 px-4">
+    <a asp-action="Index"
+       class="inline-flex items-center px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all shadow-sm">
+        <i class="fa-solid fa-arrow-left mr-2"></i>
+        <span>Back</span>
+    </a>
+</div>
 
-<h1>Create</h1>
 
-<h4>CustomerDetail</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<form asp-action="Create" class="w-full max-w-2xl mx-auto" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CustomerName" class="control-label"></label>
-                <input asp-for="CustomerName" class="form-control" />
-                <span asp-validation-for="CustomerName" class="text-danger"></span>
+    <p class="text-lg text-center font-medium mb-6">Create new customer</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+            <label asp-for="CustomerName" class="text-sm font-sm"></label>
+            <input asp-for="CustomerName" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+            <span asp-validation-for="CustomerName" class="text-red-600"></span>
+        </div>
+    
+            <div>
+                <label asp-for="CustomerLastName" class="text-sm font-sm"></label>
+                <input asp-for="CustomerLastName" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+                <span asp-validation-for="CustomerLastName" class="text-red-600"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CustomerLastName" class="control-label"></label>
-                <input asp-for="CustomerLastName" class="form-control" />
-                <span asp-validation-for="CustomerLastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerPhone" class="control-label"></label>
-                <input asp-for="CustomerPhone" class="form-control" />
-                <span asp-validation-for="CustomerPhone" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerEmail" class="control-label"></label>
-                <input asp-for="CustomerEmail" class="form-control" />
-                <span asp-validation-for="CustomerEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+                <div>
+                    <label asp-for="CustomerPhone" class="text-sm font-sm"></label>
+                    <input asp-for="CustomerPhone" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+                    <span asp-validation-for="CustomerPhone" class="text-red-600"></span>
+                </div>
+   
+                    <div>
+                        <label asp-for="CustomerEmail" class="text-sm font-sm"></label>
+                        <input asp-for="CustomerEmail" placeholder="Enter customer email (optional)" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+                        <span asp-validation-for="CustomerEmail" class="text-red-600"></span>
+                    </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+            </div>
+    <!-- Centered button -->
+    <div class="flex justify-center mt-6">
+        <input type="submit" value="Create" class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all" />
+    </div>
+        </form>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

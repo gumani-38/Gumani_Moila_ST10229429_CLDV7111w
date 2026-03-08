@@ -20,10 +20,11 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
         public int VenueId { get; set; }
 
         // Default value set to current date/time
+        [DisplayFormat(DataFormatString = "{0:dd MMM yy}")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Navigation property for the foreign key
-        public Venue Venue { get; set; }
+        public Venue? Venue { get; set; }
 
     }
 }
