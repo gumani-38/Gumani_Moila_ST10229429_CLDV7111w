@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Models
@@ -17,6 +18,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
         [Required(ErrorMessage = "Event date is required")]
         public DateTime EventDate { get; set; }
         [ForeignKey("Venue")]
+        [DisplayName("Which Venue?")]
         public int VenueId { get; set; }
 
         // Default value set to current date/time

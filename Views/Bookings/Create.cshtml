@@ -15,30 +15,21 @@
 <form asp-action="Create" class="w-full max-w-2xl mx-auto" method="post">
     @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-red-600"></div>
-    <p class="text-lg text-center font-medium mb-6">Create new venue</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-  
-        <div>
-            <label asp-for="UserId" class="text-sm font-sm"></label>
-            <input asp-for="UserId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
-            <span asp-validation-for="UserId" class="text-red-600"></span>
-        </div>
-         
-        <div>
-            <label asp-for="EventId" class="text-sm font-sm"></label>
-            <input asp-for="EventId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
-            <span asp-validation-for="EventId" class="text-red-600"></span>
-        </div>
-
+    <p class="text-lg text-center font-medium mb-6">Create new booking</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">     
         <div>
             <label asp-for="VenueId" class="text-sm font-sm"></label>
-            <input asp-for="VenueId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+            <select asp-for="VenueId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.VenueId"></select>
             <span asp-validation-for="VenueId" class="text-red-600"></span>
         </div>
- 
+        <div>
+            <label asp-for="EventId" class="text-sm font-sm"></label>
+            <select asp-for="EventId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.EventId"></select>
+            <span asp-validation-for="EventId" class="text-red-600"></span>
+        </div>
         <div>
             <label asp-for="CustomerId" class="text-sm font-sm"></label>
-            <input asp-for="CustomerId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+            <select asp-for="CustomerId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.CustomerId"></select>
             <span asp-validation-for="CustomerId" class="text-red-600"></span>
         </div>
         </div>

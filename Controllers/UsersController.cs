@@ -88,18 +88,26 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,UserLastName,UserEmail,UserPassword,UserPhone,IsAdmin,CreatedAt")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,UserLastName,UserPassword,UserPhone")] User posted)
         {
-            if (id != user.UserId)
+            if (id != posted.UserId)
             {
                 return NotFound();
             }
-
+            var user = await _context.User.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
+                user.UserName = posted.UserName;
+                user.UserLastName = posted.UserLastName;
+                user.UserPhone = posted.UserPhone;
+                user.UserPassword = BCrypt.Net.BCrypt.HashPassword(posted.UserPassword);
                 try
                 {
-                    _context.Update(user);
+                    
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

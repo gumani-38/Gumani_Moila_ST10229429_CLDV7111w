@@ -11,16 +11,13 @@
     <header>
         <nav class="sticky top-0 flex flex-row justify-between align-items-center px-10  pb-4 pt-4 border-b-1 border-gray-300 w-full shadow-sm">
 
-         <span class="text-lg font-bold">Logo</span>
+         <a asp-controller="Home"  action="Index" class="text-lg font-bold">Logo</a>
          <div class="flex gap-7">
-             <a href="/" class=" font-">Home</a>
                 <a asp-controller="Users" asp-action="Index">User</a>
                 <a asp-controller="Bookings" asp-action="Index">Bookings</a>
                 <a asp-controller="Venues" asp-action="Index">Venues</a>
                 <a asp-controller="CustomerDetails" asp-action="Index">Customer details</a>
-                <a asp-controller="Events" asp-action="Index">Events</a>
-             <a href="/Contact">Contact</a>
-
+                <a asp-controller="Events" asp-action="Index">Events</a>         
          </div>
         </nav>
     </header>

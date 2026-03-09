@@ -86,18 +86,29 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,CustomerName,CustomerLastName,CustomerPhone,CustomerEmail,CreatedAt")] CustomerDetail customerDetail)
+        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,CustomerName,CustomerLastName,CustomerPhone,CustomerEmail")] CustomerDetail posted)
         {
-            if (id != customerDetail.CustomerId)
+            if (id != posted.CustomerId)
+            {
+                return NotFound();
+            }
+            var customerDetail = await _context.CustomerDetail.FindAsync(id);
+            if (customerDetail == null)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                // Only update the properties that are allowed to be edited
+                customerDetail.CustomerName = posted.CustomerName;
+                customerDetail.CustomerLastName = posted.CustomerLastName;
+                customerDetail.CustomerPhone = posted.CustomerPhone;
+                customerDetail.CustomerEmail = posted.CustomerEmail;
+
                 try
                 {
-                    _context.Update(customerDetail);
+                   
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

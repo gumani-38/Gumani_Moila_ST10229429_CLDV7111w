@@ -94,18 +94,27 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl,CreatedAt,UserId")] Venue venue)
+        public async Task<IActionResult> Edit(int id, [Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl")] Venue posted)
         {
-            if (id != venue.VenueId)
+            if (id != posted.VenueId)
             {
                 return NotFound();
             }
 
+            // load tracked entity so we don't have to worry about updating the UserId
+            var venue = await _context.Venue.FindAsync(id);
+            if (venue == null) {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
+                // update only allowed properties
+                venue.VenueName = posted.VenueName;
+                venue.VenueLocation = posted.VenueLocation;
+                venue.VenueCapacity = posted.VenueCapacity;
+                venue.VenueImageUrl = posted.VenueImageUrl;
                 try
                 {
-                    _context.Update(venue);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

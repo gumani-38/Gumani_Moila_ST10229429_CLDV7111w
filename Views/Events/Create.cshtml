@@ -29,15 +29,16 @@
             <input asp-for="EventDescription" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
             <span asp-validation-for="EventDescription" class="text-red-600"></span>
         </div>
-            <div class="form-group">
-                <label asp-for="EventDate" class="control-label"></label>
-                <input asp-for="EventDate" class="form-control" />
-                <span asp-validation-for="EventDate" class="text-danger"></span>
-            </div>
+     
         <div>
             <label asp-for="EventDate" class="text-sm font-sm"></label>
             <input asp-for="EventDate" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
             <span asp-validation-for="EventDate" class="text-red-600"></span>
+        </div>
+        <div >
+            <label asp-for="VenueId" class="text-sm font-sm"></label>
+            <select asp-for="VenueId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.VenueId"></select>
+            <span asp-validation-for="VenueId" class="text-red-600"></span>
         </div>
         </div>
 

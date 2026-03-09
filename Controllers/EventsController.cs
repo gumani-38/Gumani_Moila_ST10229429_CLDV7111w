@@ -48,7 +48,16 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueImageUrl");
+  
+            ViewData["VenueId"] = new SelectList(
+                _context.Venue.Select(v => new {
+                    v.VenueId,
+                    DisplayText = v.VenueName + " (" + v.VenueLocation + ") - Capacity: " + v.VenueCapacity
+                }),
+                "VenueId",
+                "DisplayText"
+            );
+   
             return View();
         }
 
@@ -59,6 +68,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt")] Event @event)
         {
+
             if (ModelState.IsValid)
             {
                 _context.Add(@event);
@@ -82,7 +92,13 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             {
                 return NotFound();
             }
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueImageUrl", @event.VenueId);
+            ViewData["VenueId"] = new SelectList(_context.Venue.Select( v => new
+                {
+                v.VenueId,
+                DisplayText = v.VenueName + " (" + v.VenueLocation + ") - Capacity: " + v.VenueCapacity
+
+
+            }), "VenueId","DisplayText");
             return View(@event);
         }
 

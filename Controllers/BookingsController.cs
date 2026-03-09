@@ -51,10 +51,25 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // GET: Bookings/Create
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail, "CustomerId", "CustomerLastName");
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventDescription");
+            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail.Select(v => new
+            {
+                v.CustomerId,
+                DisplayName = v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
+
+            }), "CustomerId", "DisplayName");
+
+            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName");
             ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail");
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueImageUrl");
+            ViewData["VenueId"] = new SelectList(
+            _context.Venue
+                .Select(v => new {
+                    v.VenueId,
+                    DisplayName = v.VenueName + " - " + v.VenueLocation
+                }),
+            "VenueId",
+            "DisplayName"
+        );
+
             return View();
         }
 
@@ -63,18 +78,35 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookingId,UserId,EventId,VenueId,CustomerId,BookingDate")] Booking booking)
+        public async Task<IActionResult> Create([Bind("BookingId,EventId,VenueId,CustomerId,BookingDate")] Booking booking)
         {
+            booking.UserId = 1; // Set the UserId to a default value (e.g., 1) since it's not included in the form
             if (ModelState.IsValid)
             {
+               
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail, "CustomerId", "CustomerLastName", booking.CustomerId);
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventDescription", booking.EventId);
+            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail.Select(v => new
+            {
+                v.CustomerId,
+                DisplayName = v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
+
+            }), "CustomerId", "DisplayName");
+            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName", booking.EventId);
             ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", booking.UserId);
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueImageUrl", booking.VenueId);
+            ViewData["VenueId"] = new SelectList(
+                _context.Venue
+                    .Select(v => new {
+                        v.VenueId,
+                        DisplayName = v.VenueName + ", " + v.VenueLocation
+                    }),
+                "VenueId",
+                "DisplayName",
+                booking?.VenueId
+            );
+
             return View(booking);
         }
 
