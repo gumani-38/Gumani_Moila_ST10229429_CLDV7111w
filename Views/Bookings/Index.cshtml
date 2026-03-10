@@ -17,7 +17,7 @@
 <div class="flex flex-wrap gap-3 justify-center p-6">
 @foreach (var item in Model) {
     <div class="max-w-md rounded px-2 py-1 w-full flex flex-row gap-2 shadow-lg bg-white">
-        <img class="w-[100px] h-full object-cover rounded"
+        <img class="w-[130px] h-[130px] object-cover rounded"
         src="@Html.DisplayFor(modelItem => item.Venue.VenueImageUrl)"
              alt="Event Image" />
         <div class="flex-1">
@@ -25,9 +25,11 @@
                 <div class="font-semibold text-sm">@Html.DisplayFor(modelItem => item.Event.EventName)</div>
                 <p class="text-gray-500 text-xs font-medium">@Html.DisplayFor(modelItem => item.BookingDate)</p>
             </div>
-              <p class=" text-sm"><i class="fa-solid fa-location-dot"></i> @Html.DisplayFor(modelItem => item.Venue.VenueName), @Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
+              <p class="text-sm  capitalize"><i class="fa-solid fa-location-dot"></i> @Html.DisplayFor(modelItem => item.Venue.VenueName), @Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
               <p class="text-sm "> @Html.DisplayFor(modelItem => item.Event.EventDate)</p>
             <p class="text-gray-700 text-sm">@Html.DisplayFor(modelItem => item.Event.EventDescription)</p>
+
+                        <p class="text-sm font-normal capitalize">@Html.DisplayFor(modelItem => item.CustomerDetail.CustomerName) @Html.DisplayFor(modelItem => item.CustomerDetail.CustomerLastName) - @Html.DisplayFor(modelItem => item.CustomerDetail.CustomerPhone)</p>
             <div class=" flex items-center justify-between">
                 <a asp-action="Edit" class="text-blue-600 text-sm" asp-route-id="@item.BookingId"><i class="fa-regular fa-pen-to-square"></i></a>
                 @* <a asp-action="Details" asp-route-id="@item.UserId">Details</a> | *@

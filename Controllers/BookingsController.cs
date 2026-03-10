@@ -93,7 +93,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 v.CustomerId,
                 DisplayName = v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
 
-            }), "CustomerId", "DisplayName");
+            }), "CustomerId", "DisplayName",booking.CustomerId);
             ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName", booking.EventId);
             ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", booking.UserId);
             ViewData["VenueId"] = new SelectList(
@@ -104,7 +104,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                     }),
                 "VenueId",
                 "DisplayName",
-                booking?.VenueId
+                booking.VenueId
             );
 
             return View(booking);
@@ -123,10 +123,17 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail, "CustomerId", "CustomerLastName", booking.CustomerId);
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventDescription", booking.EventId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", booking.UserId);
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueImageUrl", booking.VenueId);
+            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail.Select(v=> new
+            {
+                v.CustomerId,
+                DisplayName= v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
+            }),"CustomerId", "DisplayName", booking.CustomerId);
+            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName", booking.EventId);
+  
+            ViewData["VenueId"] = new SelectList(_context.Venue.Select(v => new { 
+             v.VenueId,
+             DisplayName = v.VenueName + ", " + v.VenueLocation
+            }), "VenueId", "DisplayName", booking.VenueId);
             return View(booking);
         }
 
@@ -135,18 +142,26 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookingId,UserId,EventId,VenueId,CustomerId,BookingDate")] Booking booking)
+        public async Task<IActionResult> Edit(int id, [Bind("BookingId,EventId,VenueId,CustomerId")] Booking posted)
         {
-            if (id != booking.BookingId)
+            if (id != posted.BookingId)
             {
                 return NotFound();
             }
 
+            var booking = await _context.Booking.FindAsync(id);
+            if(booking == null)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(booking);
+                    // only update the properties that are allowed to be edited
+                    booking.EventId = posted.EventId;
+                    booking.VenueId = posted.VenueId;
+                    booking.CustomerId = posted.CustomerId;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -162,10 +177,17 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail, "CustomerId", "CustomerLastName", booking.CustomerId);
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventDescription", booking.EventId);
-            ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", booking.UserId);
-            ViewData["VenueId"] = new SelectList(_context.Venue, "VenueId", "VenueImageUrl", booking.VenueId);
+            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail.Select(v => new
+            {
+                v.CustomerId,
+                DisplayName = v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
+            }),"CustomerId", "DisplayName", booking.CustomerId);
+            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName", booking.EventId);
+
+            ViewData["VenueId"] = new SelectList(_context.Venue.Select(v => new {
+                v.VenueId,
+                DisplayName = v.VenueName + ", " + v.VenueLocation
+            }),"VenueId","DisplayName", booking.VenueId);
             return View(booking);
         }
 

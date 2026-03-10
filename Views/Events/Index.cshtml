@@ -16,7 +16,7 @@
 @foreach (var item in Model) {
         <div class="max-w-md w-full px-2 py-1 rounded flex flex-row gap-3
 shadow-lg bg-white">
-            <img class="w-[130px] h-[129px] object-cover rounded"
+            <img class="w-[100px] h-[120px] object-cover rounded"
                  src="@Html.DisplayFor(modelItem => item.Venue.VenueImageUrl)"
                  alt="Event Image" />
             <div class=" flex-1">
@@ -30,8 +30,7 @@ shadow-lg bg-white">
                     <p class="text-gray-500 text-xs font-medium">@Html.DisplayFor(modelItem => item.CreatedAt)</p>
                 </div>
 
-                <p class="text-sm font-medium">@Html.DisplayFor(modelItem => item.Venue.VenueName)</p>
-                <p class=" text-sm "><i class="fa-solid fa-location-dot"></i>@Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
+                <p class=" text-sm capitalize"><i class="fa-solid fa-location-dot"></i>@Html.DisplayFor(modelItem => item.Venue.VenueName), @Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
                 <p class="text-gray-700 text-sm">@Html.DisplayFor(modelItem => item.EventDate)</p>
 
                 <div class=" flex items-center justify-between">
