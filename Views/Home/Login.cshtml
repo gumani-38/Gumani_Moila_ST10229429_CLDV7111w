@@ -1,0 +1,33 @@
+﻿@model Gumani_Moila_ST10229429_CLDV7111w.Models.User
+@{
+    ViewData["Title"] = "Login"; 
+}
+
+
+<div class="flex justify-center items-center h-[100vh]">
+
+    <form asp-action="Login" asp-controller="Users"  method="post" class="max-w-md w-full flex flex-col border-1 border-gray-300 rounded p-8">
+        @Html.AntiForgeryToken()
+        <span class="text-center mb-10 font-semibold text-xl">Login</span>
+        <div asp-validation-summary="ModelOnly" class="text-red-600 text-center mb-3"></div>
+        <div class="flex flex-col mb-4">
+            <label asp-for="UserEmail" class="text-sm font-medium capitalize">Email</label>
+            <input asp-for="UserEmail" type="email" class="py-2 px-3 bg-gray-300 rounded border-0 outline-none transition-all" />
+            <span asp-validation-for="UserEmail" class="text-red-600"></span>
+        </div>
+        <div class="flex flex-col mb-4">
+            <label asp-for="UserPassword" class="text-sm font-medium capitalize">Password</label>
+            <div class="py-2 px-3 bg-gray-300 rounded flex flex-row items-center">
+                <input asp-for="UserPassword"  type="password" id="Password" class="flex-1 border-0 outline-none transition-all" />
+            @* // toggle password visiblity *@
+                <span id="togglePassword" class="cursor-pointer">
+                <i class="fa-regular fa-eye-slash" id="toggleIcon"></i>
+                </span>
+            </div>
+            <span asp-validation-for="UserPassword" class="text-red-600"></span>
+        </div>
+
+            <input type="submit" class="bg-blue-600 mt-10 rounded px-3 py-2 text-center font-medium text-base hover:bg-black text-white" value="Login"/>
+
+    </form>
+</div>

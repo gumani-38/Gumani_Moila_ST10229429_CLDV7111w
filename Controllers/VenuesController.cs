@@ -1,15 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Gumani_Moila_ST10229429_CLDV7111w.Data;
-using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 {
+    [Authorize]
     public class VenuesController : Controller
     {
         private readonly EventEaseContext _context;
@@ -59,7 +63,11 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl,UserId")] Venue venue)
         {
-            venue.UserId = 1;
+            // ✅ Middleware ensures only authenticated users reach here
+            // Grab the logged-in user's ID from session
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            venue.UserId = userId;
+
 
             if (ModelState.IsValid)
             {

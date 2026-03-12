@@ -1,16 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Gumani_Moila_ST10229429_CLDV7111w.Data;
-using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         private readonly EventEaseContext _context;
@@ -66,6 +71,67 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             }
             return View(user);
         }
+
+        // Post: users/login
+        // allow user email and password
+        // use bcrypt to compare the hashed password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(User posted)
+    {
+        var user = await _context.User
+            .FirstOrDefaultAsync(u => u.UserEmail == posted.UserEmail);
+
+        if (user == null)
+        {
+            ModelState.AddModelError("", "Invalid email or password");
+            return View("Views/Home/Login.cshtml", posted);
+        }
+
+        if (!BCrypt.Net.BCrypt.Verify(posted.UserPassword, user.UserPassword))
+        {
+            ModelState.AddModelError("", "Invalid email or password");
+            return View("Views/Home/Login.cshtml", posted);
+        }
+
+        // Create user claims
+        var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim(ClaimTypes.Email, user.UserEmail),
+            new Claim(ClaimTypes.Name, $"{user.UserName} {user.UserLastName}")
+
+    };
+
+        var claimsIdentity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme
+        );
+
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true
+        };
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity),
+            authProperties
+        );
+
+        return RedirectToAction("Index", "Home");
+    }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            return RedirectToAction("Login", "Home");
+        }
+
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)

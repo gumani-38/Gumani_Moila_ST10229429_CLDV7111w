@@ -1,9 +1,12 @@
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -17,7 +20,18 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         {
             return View();
         }
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
+            if (userIdClaim != null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

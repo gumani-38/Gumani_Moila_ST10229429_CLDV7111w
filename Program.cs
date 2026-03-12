@@ -1,4 +1,5 @@
 using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w
@@ -12,6 +13,12 @@ namespace Gumani_Moila_ST10229429_CLDV7111w
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<EventEaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("EventEaseContext")));
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+     .AddCookie(options =>
+     {
+         options.LoginPath = "/Home/Login";
+         options.AccessDeniedPath = "/Home/Login";
+     });
 
             var app = builder.Build();
 
@@ -23,12 +30,12 @@ namespace Gumani_Moila_ST10229429_CLDV7111w
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Login}/{id?}");
 
             app.Run();
         }

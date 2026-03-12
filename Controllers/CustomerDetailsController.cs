@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Gumani_Moila_ST10229429_CLDV7111w.Data;
-using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 {
+    [Authorize]
     public class CustomerDetailsController : Controller
     {
         private readonly EventEaseContext _context;

@@ -8,96 +8,93 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="box-border flex flex-col">
-    <header>
- 
-        <nav class="relative bg-gray-800">
-            <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-                <div class="relative flex h-16 items-center justify-between">
-                    <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                   <!-- Mobile menu button -->
-<div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-    <button type="button" onclick="toggleMobileMenu()" 
-            class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-none">
-        <span class="sr-only">Open main menu</span>
-        <!-- Hamburger icon -->
-        <svg id="menuIcon" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-        <!-- Close icon -->
-        <svg id="closeIcon" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12" />
-        </svg>
-    </button>
-</div>
-@* 
-<!-- Mobile menu -->
-<div id="mobileMenu" class="hidden sm:hidden bg-gray-800 w-full">
-    <div class="space-y-1 px-2 pt-2 pb-3">
-        <a asp-controller="Venues" asp-action="Index"
-           class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">Venue</a>
-        <a asp-controller="Events" asp-action="Index"
-           class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">Event</a>
-        <a asp-controller="Bookings" asp-action="Index"
-           class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">Bookings</a>
-        <a asp-controller="CustomerDetails" asp-action="Index"
-           class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-gray-700">Customer</a>
-    </div>
-</div> *@
-            
-                    </div>
-                    <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                        <div class="flex shrink-0 items-center">
-                            <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" class="h-8 w-auto" />
-                        </div>
-                        <div class="hidden sm:ml-6 sm:block">
-                            <div class="flex space-x-4">
-                                <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                                <a asp-controller="Venues" asp-action="Index" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white">Venue</a>
-                                <a asp-controller="Events" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Event</a>
-                                <a asp-controller="Bookings" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Bookings</a>
-                                <a asp-controller="CustomerDetails" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white">Customer</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+    @if (User.Identity.IsAuthenticated)
+        {
 
-                        <!-- Profile dropdown -->
-                        <div class="relative ml-3">
-                            <button onclick="toggleDropdown()"
-                                    class="relative flex rounded-full focus:outline-none">
-                                <div class="size-8 rounded-full bg-gray-300 flex justify-center items-center">
-                                    <i class="fa-solid fa-user text-gray-500"></i>
+            <header>
+                <nav class="relative  shadow-sm">
+                    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+                        <div class="relative flex h-16 items-center justify-between">
+                            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                                <!-- Mobile menu button -->
+                                <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                                    <button type="button" onclick="toggleMobileMenu()" 
+                                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-none">
+                                        <span class="sr-only">Open main menu</span>
+                                        <!-- Hamburger icon -->
+                                        <svg id="menuIcon" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16" />
+                                        </svg>
+                                        <!-- Close icon -->
+                                        <svg id="closeIcon" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                 </div>
-                            </button>
 
-                            <!-- Dropdown menu -->
-                            <div id="profileDropdown"
-                                 class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your profile</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                            </div>
+                            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                                <div class="flex shrink-0 items-center">
+                                    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" class="h-8 w-auto" />
+                                </div>
+                                <div class="hidden sm:ml-6 sm:block">
+                                    <div class="flex space-x-4">
+                                        <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
+                                        <a asp-controller="Home" asp-action="Index" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white">Dashboard</a>
+                                        <a asp-controller="Venues" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium hover:text-blue-600">Venue</a>
+                                        <a asp-controller="Events" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium  hover:text-blue-600">Event</a>
+                                        <a asp-controller="Bookings" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium  hover:text-blue-600">Bookings</a>
+                                        <a asp-controller="CustomerDetails" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium  hover:text-blue-600">Customer</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+
+                                <!-- Profile dropdown -->
+                                <div class="relative ml-3">
+                                    <button onclick="toggleDropdown()"
+                                    class="relative flex rounded-full focus:outline-none">
+                                        <div class="size-8 rounded-full bg-gray-300 flex justify-center items-center">
+                                            <i class="fa-solid fa-user text-gray-500"></i>
+                                        </div>
+                                    </button>
+
+                                    <!-- Dropdown menu -->
+                                    <div id="profileDropdown"
+                                    class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg">
+                                        <p href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        @User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+                                        @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+
+                                        </p>
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Update password</a>
+                                        <form asp-action="Logout" asp-controller="Users" method="post">                                           
+                                            <input type="submit" value="Sign out" class="text-sm border-0 outline-none text-red-600 font-medium"/>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <!-- ✅ MOBILE MENU GOES HERE -->
-            <div id="mobileMenu" class="hidden sm:hidden bg-gray-800">
-                <div class="space-y-1 px-2 pt-2 pb-3">
-                    <a asp-controller="Venues" asp-action="Index" class="block px-3 py-2 text-white">Venue</a>
-                    <a asp-controller="Events" asp-action="Index" class="block px-3 py-2 text-white">Event</a>
-                    <a asp-controller="Bookings" asp-action="Index" class="block px-3 py-2 text-white">Bookings</a>
-                    <a asp-controller="CustomerDetails" asp-action="Index" class="block px-3 py-2 text-white">Customer</a>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="pt-20">
-        <main role="main" class="pb-3">
+                    <!-- ✅ MOBILE MENU GOES HERE -->
+                    <div id="mobileMenu" class="hidden sm:hidden bg-gray-200">
+                        <div class="space-y-1 px-2 pt-2 pb-3">
+                            <a asp-controller="Venues" asp-action="Index" class="block px-3 py-2 ">Venue</a>
+                            <a asp-controller="Events" asp-action="Index" class="block px-3 py-2 ">Event</a>
+                            <a asp-controller="Bookings" asp-action="Index" class="block px-3 py-2 ">Bookings</a>
+                            <a asp-controller="CustomerDetails" asp-action="Index" class="block px-3 py-2 ">Customer</a>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+        }
+    <div class="@(User.Identity.IsAuthenticated ? "pt-20" : "")">
+        <!-- content -->
+        <main role="main" class="pb-3 px-5">
             @RenderBody()
         </main>
     </div>
@@ -119,6 +116,19 @@
             menuIcon.classList.toggle("hidden");
             closeIcon.classList.toggle("hidden");
         }
+        document.getElementById("togglePassword")?.addEventListener("click", function() {
+            const passwordInput = document.getElementById("Password");
+            const toggleIcon = document.getElementById("toggleIcon");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            }
+        });
 
     </script>
 

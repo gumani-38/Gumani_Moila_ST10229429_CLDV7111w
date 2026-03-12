@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Gumani_Moila_ST10229429_CLDV7111w.Data;
-using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 {
+    [Authorize]
     public class BookingsController : Controller
     {
         private readonly EventEaseContext _context;
@@ -80,7 +83,11 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookingId,EventId,VenueId,CustomerId,BookingDate")] Booking booking)
         {
-            booking.UserId = 1; // Set the UserId to a default value (e.g., 1) since it's not included in the form
+            // ✅ Middleware ensures only authenticated users reach here
+            // Grab the logged-in user's ID from session
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            booking.UserId = userId; 
             if (ModelState.IsValid)
             {
                
