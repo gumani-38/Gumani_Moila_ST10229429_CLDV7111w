@@ -6,6 +6,8 @@
     <title>@ViewData["Title"] - Event Ease</title>
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 </head>
 <body class="box-border flex flex-col">
     @if (User.Identity.IsAuthenticated)
@@ -65,15 +67,9 @@
 
                                     <!-- Dropdown menu -->
                                     <div id="profileDropdown"
-                                    class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg">
-                                        <p href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        @User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
-                                        @User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
-
-                                        </p>
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Update password</a>
+                                    class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg p-5">
                                         <form asp-action="Logout" asp-controller="Users" method="post">                                           
-                                            <input type="submit" value="Sign out" class="text-sm border-0 outline-none text-red-600 font-medium"/>
+                                        <input type="submit" value="Sign out, @User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value" class="text-sm border-0 outline-none text-red-600 font-medium capitalize" />
                                         </form>
                                     </div>
                                 </div>
@@ -98,9 +94,9 @@
             @RenderBody()
         </main>
     </div>
+ 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         function toggleDropdown() {

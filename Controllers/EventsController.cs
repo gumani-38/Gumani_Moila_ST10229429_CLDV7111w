@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
@@ -24,8 +25,21 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            var eventEaseContext = _context.Event.Include(v => v.Venue);
-            return View(await eventEaseContext.ToListAsync());
+            var events = await _context.Event
+.Include(e => e.Venue)
+.Select(e => new Event
+{
+EventId = e.EventId,
+EventName = e.EventName,
+EventDescription = e.EventDescription,
+EventDate = e.EventDate,
+VenueId = e.VenueId,
+CreatedAt = e.CreatedAt,
+Venue = e.Venue,
+RemainingSeats = e.Venue.VenueCapacity - _context.Booking.Count(b => b.EventId == e.EventId)
+})
+.ToListAsync();
+            return View(events);
         }
 
         // GET: Events/Details/5
@@ -68,8 +82,9 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt")] Event @event)
+        public async Task<IActionResult> Create([Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt,UserId")] Event @event)
         {
+            @event.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             if (ModelState.IsValid)
             {

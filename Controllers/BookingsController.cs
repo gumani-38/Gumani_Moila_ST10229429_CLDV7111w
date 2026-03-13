@@ -52,30 +52,42 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Bookings/Create
-        public IActionResult Create()
+        // GET: Bookings/Create
+        public IActionResult Create(int? eventId, int? venueId)
         {
-            ViewData["CustomerId"] = new SelectList(_context.CustomerDetail.Select(v => new
-            {
-                v.CustomerId,
-                DisplayName = v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
+            ViewData["CustomerId"] = new SelectList(
+                _context.CustomerDetail
+                 .OrderByDescending(c => c.CreatedAt) // sort by most recent added 
+.Select(v => new {
+                    v.CustomerId,
+                    DisplayName = v.CustomerName + " " + v.CustomerLastName + " - " + v.CustomerPhone
+                }),
+                "CustomerId",
+                "DisplayName",
+                null // as a default
+            );
 
-            }), "CustomerId", "DisplayName");
+            ViewData["EventId"] = new SelectList(
+                _context.Event,
+                "EventId",
+                "EventName",
+                eventId // pre-select if provided
+            );
 
-            ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName");
             ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail");
+
             ViewData["VenueId"] = new SelectList(
-            _context.Venue
-                .Select(v => new {
+                _context.Venue.Select(v => new {
                     v.VenueId,
                     DisplayName = v.VenueName + " - " + v.VenueLocation
                 }),
-            "VenueId",
-            "DisplayName"
-        );
+                "VenueId",
+                "DisplayName",
+                venueId // pre-select if provided
+            );
 
             return View();
         }
-
         // POST: Bookings/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.

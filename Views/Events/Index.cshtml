@@ -12,36 +12,42 @@
     </a>
     <a asp-action="Create" class="bg-blue-600 py-2 px-3 rounded text-white">Create New</a>
 </div>
-<div class="flex flex-wrap gap-3 p-12 justify-center items-center">
-@foreach (var item in Model) {
-        <div class="max-w-md w-full px-2 py-1 rounded flex flex-row gap-3
-shadow-lg bg-white">
-            <img class="w-[100px] h-[120px] object-cover rounded"
-                 src="@Html.DisplayFor(modelItem => item.Venue.VenueImageUrl)"
-                 alt="Event Image" />
-            <div class=" flex-1">
-                <div class="flex flex-row justify-between align-items-center">
-                    <a asp-action="Edit" class="text-blue-600 text-sm" asp-route-id="@item.EventId"><i class="fa-regular fa-pen-to-square"></i></a>
-                    @* <a asp-action="Details" asp-route-id="@item.UserId">Details</a> | *@
-                    <a asp-action="Delete" class="text-red-600 text-sm" asp-route-id="@item.EventId"><i class="fa-regular fa-trash-can"></i></a>
-                    </div>
-                <div class="flex flex-row justify-between align-items-center">
-                    <div class="font-semibold text-sm">@Html.DisplayFor(modelItem => item.EventName)</div>
-                    <p class="text-gray-500 text-xs font-medium">@Html.DisplayFor(modelItem => item.CreatedAt)</p>
-                </div>
+<div class="flex flex-wrap gap-6 p-12 justify-center items-center">
+@foreach (var item in Model)
+{
+    <div class="max-w-md w-full px-2 py-1 rounded flex flex-row gap-3
+        shadow-lg bg-white">
+        <img class="w-[100px] h-[110px] object-cover rounded"
+             src="@Html.DisplayFor(modelItem => item.Venue.VenueImageUrl)"
+             alt="Event Image" />
+        <div class=" flex-1">
+            <div class="flex flex-row justify-between align-items-center">
+                <a asp-action="Edit" class="text-blue-600 text-sm" asp-route-id="@item.EventId"><i class="fa-regular fa-pen-to-square"></i></a>
+                @* <a asp-action="Details" asp-route-id="@item.UserId">Details</a> | *@
+                <a asp-action="Delete" class="text-red-600 text-sm" asp-route-id="@item.EventId"><i class="fa-regular fa-trash-can"></i></a>
+            </div>
+            <div class="flex flex-row justify-between align-items-center">
+                <div class="font-semibold text-sm">@Html.DisplayFor(modelItem => item.EventName)</div>
+                <p class="text-gray-500 text-xs font-medium">@Html.DisplayFor(modelItem => item.CreatedAt)</p>
+            </div>
 
-                <p class=" text-sm capitalize"><i class="fa-solid fa-location-dot"></i>@Html.DisplayFor(modelItem => item.Venue.VenueName), @Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
-                <p class="text-gray-700 text-sm">@Html.DisplayFor(modelItem => item.EventDate)</p>
+            <p class=" text-sm capitalize"><i class="fa-solid fa-location-dot"></i>@Html.DisplayFor(modelItem => item.Venue.VenueName), @Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
+            <p class="text-gray-700 text-sm">@Html.DisplayFor(modelItem => item.EventDate)</p>
 
-                <div class=" flex items-center justify-between">
-                    <p><strong class="text-red-700 text-sm">@Html.DisplayFor(modelItem => item.Venue.VenueCapacity)</strong> left!</p>
-                    <a href="#" class="bg-black text-white px-3 py-1 rounded-sm text-xs text-center hover:bg-gray-800">
+            <div class=" flex items-center justify-between">
+                <p><strong class="text-green-600 text-sm">@Html.DisplayFor(modelItem => item.Venue.VenueCapacity) </strong>-><strong class="text-red-700 text-sm"> @Html.DisplayFor(modelItem => item.RemainingSeats)</strong></p>
+                    <a asp-controller="Bookings"
+                       asp-action="Create"
+                       asp-route-eventId="@item.EventId"
+                       asp-route-venueId="@item.VenueId"
+                       class="bg-black text-white px-3 py-1 rounded-sm text-xs text-center hover:bg-gray-800">
                         Book
                     </a>
-                </div>
             </div>
         </div>
+    </div>
 }
 </div>
+
     
 

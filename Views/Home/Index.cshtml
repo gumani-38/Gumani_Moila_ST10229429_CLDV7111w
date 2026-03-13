@@ -1,39 +1,63 @@
-﻿@{
+﻿@model IEnumerable<Gumani_Moila_ST10229429_CLDV7111w.Models.Event>
+@{
     ViewData["Title"] = "Home";
-    var events = new[]
-       {
-        new { Title = "Music Fest", Date = "12 March", Venue = "125 name", Location = "81 Vlok Street", Description = "Live music and food stalls", SeatsLeft = 140 },
-        new { Title = "Tech Expo", Date = "15 March", Venue = "Tech Dome", Location = "101 Innovation Blvd", Description = "Latest gadgets and demos", SeatsLeft = 85 },
-        new { Title = "Art Fair", Date = "20 March", Venue = "Gallery Hall", Location = "22 Canvas Lane", Description = "Local artists showcase", SeatsLeft = 60 }
-    };
-    }
+  }
 
 
-<div class="flex flex-wrap gap-3 justify-center p-6">
-    @foreach (var e in events)
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-8">
+    <div class="bg-white shadow rounded p-6 text-center">
+        <h2 class="text-gray-500 text-sm font-medium">Events</h2>
+        <p class="text-2xl font-bold text-blue-600">@ViewData["TotalEvents"]</p>
+    </div>
+    <div class="bg-white shadow rounded p-6 text-center">
+        <h2 class="text-gray-500 text-sm font-medium">Venues</h2>
+        <p class="text-2xl font-bold text-green-600">@ViewData["TotalVenues"]</p>
+    </div>
+    <div class="bg-white shadow rounded p-6 text-center">
+        <h2 class="text-gray-500 text-sm font-medium">Bookings</h2>
+        <p class="text-2xl font-bold text-purple-600">@ViewData["TotalBookings"]</p>
+    </div>
+    <div class="bg-white shadow rounded p-6 text-center">
+        <h2 class="text-gray-500 text-sm font-medium">Customers</h2>
+        <p class="text-2xl font-bold text-red-600">@ViewData["TotalCustomers"]</p>
+    </div>
+</div>
+
+<div class="flex flex-wrap gap-6 p-12 justify-center items-center">
+    @foreach (var item in Model)
     {
-        <div class="max-w-md rounded px-2 py-1 w-full flex flex-row gap-2 shadow-lg bg-white">
-            <img class="w-[100px] h-full object-cover rounded"
-                 src="https://images.unsplash.com/photo-1769745836625-4cac1ba455a4?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        <div class="max-w-md w-full px-2 py-1 rounded flex flex-row gap-3
+    shadow-lg bg-white">
+            <img class="w-[100px] h-[110px] object-cover rounded"
+                 src="@Html.DisplayFor(modelItem => item.Venue.VenueImageUrl)"
                  alt="Event Image" />
-           <div class="flex-1">
-            <div class="flex flex-row justify-between align-items-center">
-                <div class="font-semibold text-sm">@e.Title</div>
-                <p class="text-gray-500 text-xs font-medium">@e.Date</p>
+            <div class=" flex-1">
+                <div class="flex flex-row justify-between align-items-center">
+                    <a asp-action="Edit" class="text-blue-600 text-sm" asp-controller="Events" asp-route-id="@item.EventId"><i class="fa-regular fa-pen-to-square"></i></a>
+                    @* <a asp-action="Details" asp-route-id="@item.UserId">Details</a> | *@
+                    <a asp-action="Delete" class="text-red-600 text-sm" asp-controller="Events" asp-route-id="@item.EventId"><i class="fa-regular fa-trash-can"></i></a>
+                </div>
+                <div class="flex flex-row justify-between align-items-center">
+                    <div class="font-semibold text-sm">@Html.DisplayFor(modelItem => item.EventName)</div>
+                    <p class="text-gray-500 text-xs font-medium">@Html.DisplayFor(modelItem => item.CreatedAt)</p>
                 </div>
 
-                <p class="text-gray-500 text-sm font-medium">Venue: @e.Venue</p>
-                <p class="text-gray-500 text-sm font-medium">Location: @e.Location</p>
-                <p class="text-gray-700 text-sm">@e.Description</p>
+                <p class=" text-sm capitalize"><i class="fa-solid fa-location-dot"></i>@Html.DisplayFor(modelItem => item.Venue.VenueName), @Html.DisplayFor(modelItem => item.Venue.VenueLocation)</p>
+                <p class="text-gray-700 text-sm">@Html.DisplayFor(modelItem => item.EventDate)</p>
 
-            <div class=" flex items-center justify-between">
-                <p><strong class="text-red-700 text-sm">@e.SeatsLeft</strong> left!</p>
-                <a href="#" class="bg-black text-white px-3 py-1 rounded-sm text-xs text-center hover:bg-gray-800">
-                    Book
-                </a>
-            </div>
+                <div class=" flex items-center justify-between">
+                    <p><strong class="text-green-600 text-sm">@Html.DisplayFor(modelItem => item.Venue.VenueCapacity) </strong>-><strong class="text-red-700 text-sm"> @Html.DisplayFor(modelItem => item.RemainingSeats)</strong></p>
+                    <a asp-controller="Bookings"
+                       asp-action="Create"
+                       asp-route-eventId="@item.EventId"
+                       asp-route-venueId="@item.VenueId"
+                       class="bg-black text-white px-3 py-1 rounded-sm text-xs text-center hover:bg-gray-800">
+                        Book
+                    </a>
+                </div>
             </div>
         </div>
     }
 </div>
+
 
