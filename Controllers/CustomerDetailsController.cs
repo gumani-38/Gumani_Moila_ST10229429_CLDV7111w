@@ -1,5 +1,6 @@
 ﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
+using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,9 +23,17 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: CustomerDetails
-        public async Task<IActionResult> Index()
+        // Supports pagination via ?pageNumber=1
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            return View(await _context.CustomerDetail.ToListAsync());
+            const int pageSize = 9; // change page size as required
+            var query = _context.CustomerDetail
+                                .AsNoTracking()
+                                .OrderBy(c => c.CustomerId)
+                                .AsQueryable();
+
+            var model = await PaginatedList<CustomerDetail>.CreateAsync(query, pageNumber ?? 1, pageSize);
+            return View(model);
         }
 
         // GET: CustomerDetails/Details/5

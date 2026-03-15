@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Gumani_Moila_ST10229429_CLDV7111w.Models.Event>
+﻿
+@using Gumani_Moila_ST10229429_CLDV7111w.Models
+@using Gumani_Moila_ST10229429_CLDV7111w.Helpers
+@model PaginatedList<Event>
 @{
     ViewData["Title"] = "Home";
   }
@@ -60,4 +63,30 @@
     }
 </div>
 
+@* // pagination *@
+@if (Model.TotalPages > 1)
+{
+    <div class="flex flex-row gap-3 items-center justify-center mt-6">
+        @if (Model.HasPreviousPage)
+        {
+            <a class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all text-sm"
+            href="@Url.Action("Index", new { pageNumber = Model.PageIndex - 1 })">Previous</a>
+        }
+        else
+        {
+            <span class="px-3 py-1 rounded bg-gray-100 text-gray-400 text-sm">Previous</span>
+        }
 
+        <p class="text-black px-3">Page @Model.PageIndex of @Model.TotalPages</p>
+
+        @if (Model.HasNextPage)
+        {
+            <a class="px-3 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all text-sm"
+            href="@Url.Action("Index", new { pageNumber = Model.PageIndex + 1 })">Next</a>
+        }
+        else
+        {
+            <span class="px-3 py-1 rounded bg-gray-100 text-gray-400 text-sm">Next</span>
+        }
+    </div>
+}

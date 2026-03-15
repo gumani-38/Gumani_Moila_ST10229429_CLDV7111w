@@ -39,18 +39,28 @@
                                 </div>
 
                             </div>
+                            @{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string NavClass(string controller, string action = null)
+    {
+        var isMatch = string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)
+            && (action == null || string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase));
+        return isMatch
+            ? "block rounded-md bg-gray-900 px-3 py-1 text-base font-medium text-white"
+            : "block rounded-md px-3 py-1 text-base font-medium hover:text-blue-600";
+    }
+}
                             <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                @* <div class="flex shrink-0 items-center">
-                                    <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" class="h-8 w-auto" />
-                                </div> *@
                                 <div class="hidden sm:ml-6 sm:block">
                                     <div class="flex space-x-4">
                                         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                                        <a asp-controller="Home" asp-action="Index" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white">Dashboard</a>
-                                        <a asp-controller="Venues" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium hover:text-blue-600">Venue</a>
-                                        <a asp-controller="Events" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium  hover:text-blue-600">Event</a>
-                                        <a asp-controller="Bookings" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium  hover:text-blue-600">Bookings</a>
-                                        <a asp-controller="CustomerDetails" asp-action="Index" class="block rounded-md px-3 py-2 text-base font-medium  hover:text-blue-600">Customer</a>
+                                        <a asp-controller="Home" asp-action="Index" class="@(NavClass("Home","Index"))">Dashboard</a>
+                                        <a asp-controller="Venues" asp-action="Index" class="@(NavClass("Venues","Index"))">Venue</a>
+                                        <a asp-controller="Events" asp-action="Index" class="@(NavClass("Events","Index"))">Event</a>
+                                        <a asp-controller="Bookings" asp-action="Index" class="@(NavClass("Bookings","Index"))">Bookings</a>
+                                        <a asp-controller="CustomerDetails" asp-action="Index" class="@(NavClass("CustomerDetails","Index"))">Customer</a>
                                     </div>
                                 </div>
                             </div>

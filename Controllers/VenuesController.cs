@@ -1,4 +1,5 @@
 ﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +25,24 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Venues
-        public async Task<IActionResult> Index()
-        {
-            var eventEaseContext = _context.Venue.Include(v => v.user);
-            return View(await eventEaseContext.ToListAsync());
-        }
+            public async Task<IActionResult> Index(int? pageNumber)
+            {
+                const int pageSize = 9; // adjust as needed
+
+                var query = _context.Venue
+                    // Use the actual navigation property name on your Venue model:
+                    // if the property is 'User' use Include(v => v.User)
+                    // if it really is 'user' use Include(v => v.user)
+                    .Include(v => v.user)
+                    .AsNoTracking()
+                    .OrderBy(v => v.VenueName)
+                    .AsQueryable();
+
+                var model = await PaginatedList<Gumani_Moila_ST10229429_CLDV7111w.Models.Venue>
+                    .CreateAsync(query, pageNumber ?? 1, pageSize);
+
+                return View(model);
+            }
 
         // GET: Venues/Details/5
         public async Task<IActionResult> Details(int? id)

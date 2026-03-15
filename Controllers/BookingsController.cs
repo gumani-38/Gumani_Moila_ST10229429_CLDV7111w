@@ -1,4 +1,5 @@
 ﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +24,23 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Bookings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            var eventEaseContext = _context.Booking.Include(b => b.CustomerDetail).Include(b => b.Event).Include(b => b.User).Include(b => b.Venue);
-            return View(await eventEaseContext.ToListAsync());
+            const int pageSize = 9; // adjust as needed
+
+            var query = _context.Booking
+                .Include(b => b.CustomerDetail)
+                .Include(b => b.Event)
+                .Include(b => b.User)
+                .Include(b => b.Venue)
+                .AsNoTracking()
+                .OrderByDescending(b => b.BookingDate)
+                .AsQueryable();
+
+            var model = await PaginatedList<Gumani_Moila_ST10229429_CLDV7111w.Models.Booking>
+                .CreateAsync(query, pageNumber ?? 1, pageSize);
+
+            return View(model);
         }
 
         // GET: Bookings/Details/5

@@ -1,4 +1,5 @@
 ﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,23 +24,29 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Events
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            var events = await _context.Event
-.Include(e => e.Venue)
-.Select(e => new Event
-{
-EventId = e.EventId,
-EventName = e.EventName,
-EventDescription = e.EventDescription,
-EventDate = e.EventDate,
-VenueId = e.VenueId,
-CreatedAt = e.CreatedAt,
-Venue = e.Venue,
-RemainingSeats = e.Venue.VenueCapacity - _context.Booking.Count(b => b.EventId == e.EventId)
-})
-.ToListAsync();
-            return View(events);
+            const int pageSize = 9; // adjust page size as needed
+
+            var query = _context.Event
+                .Include(e => e.Venue)
+                .Select(e => new Event
+                {
+                    EventId = e.EventId,
+                    EventName = e.EventName,
+                    EventDescription = e.EventDescription,
+                    EventDate = e.EventDate,
+                    VenueId = e.VenueId,
+                    CreatedAt = e.CreatedAt,
+                    Venue = e.Venue,
+                    RemainingSeats = e.Venue.VenueCapacity - _context.Booking.Count(b => b.EventId == e.EventId)
+                })
+                .AsNoTracking()
+                .OrderByDescending(e => e.EventDate)
+                .AsQueryable();
+
+            var model = await PaginatedList<Event>.CreateAsync(query, pageNumber ?? 1, pageSize);
+            return View(model);
         }
 
         // GET: Events/Details/5

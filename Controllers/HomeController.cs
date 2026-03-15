@@ -1,4 +1,5 @@
 using Gumani_Moila_ST10229429_CLDV7111w.Data;
+using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,29 +20,36 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        // Adds pagination via ?pageNumber=1
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            var events = await _context.Event
-      .Include(e => e.Venue)
-      .Select(e => new Event
-      {
-          EventId = e.EventId,
-          EventName = e.EventName,
-          EventDescription = e.EventDescription,
-          EventDate = e.EventDate,
-          VenueId = e.VenueId,
-          CreatedAt = e.CreatedAt,
-          Venue = e.Venue,
-          RemainingSeats = e.Venue.VenueCapacity - _context.Booking.Count(b => b.EventId == e.EventId)
-      })
-      .ToListAsync();
+            const int pageSize = 6; // adjust as needed
 
+            var query = _context.Event
+                .Include(e => e.Venue)
+                .Select(e => new Event
+                {
+                    EventId = e.EventId,
+                    EventName = e.EventName,
+                    EventDescription = e.EventDescription,
+                    EventDate = e.EventDate,
+                    VenueId = e.VenueId,
+                    CreatedAt = e.CreatedAt,
+                    Venue = e.Venue,
+                    RemainingSeats = e.Venue.VenueCapacity - _context.Booking.Count(b => b.EventId == e.EventId)
+                })
+                .AsNoTracking()
+                .OrderByDescending(e => e.EventDate)
+                .AsQueryable();
+
+            var model = await PaginatedList<Event>.CreateAsync(query, pageNumber ?? 1, pageSize);
 
             ViewData["TotalEvents"] = await _context.Event.CountAsync();
             ViewData["TotalVenues"] = await _context.Venue.CountAsync();
             ViewData["TotalBookings"] = await _context.Booking.CountAsync();
             ViewData["TotalCustomers"] = await _context.CustomerDetail.CountAsync();
-            return View(events);
+
+            return View(model);
         }
         [AllowAnonymous]
         public IActionResult Login()
