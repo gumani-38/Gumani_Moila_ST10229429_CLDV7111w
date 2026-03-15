@@ -48,6 +48,10 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // GET: CustomerDetails/Create
         public IActionResult Create()
         {
+            // Capture previous page
+            var referer = Request.Headers["Referer"].ToString();
+            ViewBag.ReturnUrl = referer;
+
             return View();
         }
 
@@ -56,16 +60,26 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,CustomerName,CustomerLastName,CustomerPhone,CustomerEmail,CreatedAt")] CustomerDetail customerDetail)
+        public async Task<IActionResult> Create(
+    [Bind("CustomerId,CustomerName,CustomerLastName,CustomerPhone,CustomerEmail,CreatedAt")] CustomerDetail customerDetail,
+    string ReturnUrl)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(customerDetail);
                 await _context.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(ReturnUrl))
+                {
+                    return Redirect(ReturnUrl);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(customerDetail);
         }
+
 
         // GET: CustomerDetails/Edit/5
         public async Task<IActionResult> Edit(int? id)

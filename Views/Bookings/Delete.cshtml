@@ -4,48 +4,39 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<div class="w-full flex flex-row justify-between items-center mb-20 px-4">
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Booking</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BookingDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BookingDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.UserEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Event)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Event.EventDescription)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Venue)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Venue.VenueImageUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerDetail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerDetail.CustomerLastName)
-        </dd>
-    </dl>
-    
+    <a href="javascript:history.back()"
+       class="inline-flex items-center px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all shadow-sm">
+        <i class="fa-solid fa-arrow-left mr-2"></i>
+        <span>Back</span>
+    </a>
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="BookingId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Delete booking" class="bg-red-600 py-1 px-3 text-base text-white font-medium rounded text-center" />
     </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+        <label asp-for="BookingDate" class="text-sm font-sm"></label>
+        <input asp-for="BookingDate" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100  outline-none transition-all" readonly />
+       
+    </div>
+    <div>
+        <label asp-for="EventId" class="text-sm font-sm"></label>
+        <input value="@Html.DisplayFor(item => item.Event.EventName)" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100  outline-none transition-all" readonly />
+
+    </div>
+    <div>
+        <label asp-for="VenueId" class="text-sm font-sm"></label>
+        <input value="@Html.DisplayFor(item => item.Venue.VenueName), @Html.DisplayFor(item => item.Venue.VenueLocation)"  class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100  outline-none transition-all" readonly />
+
+    </div>
+    <div>
+        <label asp-for="CustomerId" class="text-sm font-sm"></label>
+        <input value="@Html.DisplayFor(item => item.CustomerDetail.CustomerPhone) @Html.DisplayFor(item => item.CustomerDetail.CustomerLastName) - @Html.DisplayFor(item => item.CustomerDetail.CustomerPhone)" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100  outline-none transition-all" readonly />
+
+    </div>
 </div>
