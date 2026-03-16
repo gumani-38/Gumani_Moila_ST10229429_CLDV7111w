@@ -175,7 +175,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookingId,EventId,VenueId,CustomerId")] Booking posted)
+        public async Task<IActionResult> Edit(int id, [Bind("BookingId,EventId,VenueId,CustomerId,BookingDate")] Booking posted)
         {
             if (id != posted.BookingId)
             {

@@ -16,7 +16,12 @@
     @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-red-600 text-center"></div>
     <p class="text-lg text-center font-medium mb-6">Create new booking</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">     
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5"> 
+        <div>
+            <label asp-for="BookingDate" class="text-sm font-sm"></label>
+            <input asp-for="BookingDate" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+            <span asp-validation-for="BookingDate" class="text-red-600"></span>
+        </div>
         <div>
             <label asp-for="VenueId" class="text-sm font-sm"></label>
             <select asp-for="VenueId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.VenueId"></select>

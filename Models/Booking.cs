@@ -22,7 +22,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
         [ForeignKey("CustomerDetail")]
         public int CustomerId { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd MMM yy}")]
-        public DateTime BookingDate { get; set; } = DateTime.Now;
+        public DateTime BookingDate { get; set; } 
 
         // Navigation properties
         public User? User { get; set; }
