@@ -14,7 +14,7 @@
         {
 
             <header>
-                <nav class="relative  shadow-sm">
+                <nav class="fixed right-0 left-0 z-10  shadow-sm bg-white ">
                     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                         <div class="relative flex h-16 items-center justify-between">
                             <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -77,9 +77,9 @@
 
                                     <!-- Dropdown menu -->
                                     <div id="profileDropdown"
-                                    class="hidden absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg p-5">
+                                    class="hidden absolute right-0 mt-2 w-59 rounded-md bg-white shadow-lg p-3">
                                         <form asp-action="Logout" asp-controller="Users" method="post">                                           
-                                        <input type="submit" value="Sign out, @User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value" class="text-sm border-0 outline-none text-red-600 font-medium capitalize" />
+                                        <input type="submit" value="Sign out,@User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value" class="text-sm border-0 outline-none text-red-600 font-medium capitalize" />
                                         </form>
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@
         }
     <div class="@(User.Identity.IsAuthenticated ? "pt-20" : "")">
         <!-- content -->
-        <main role="main" class="pb-3 px-5">
+        <main role="main" class="pb-3 px-5 mt-10 mb-10">
             @RenderBody()
         </main>
     </div>
