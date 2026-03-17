@@ -26,7 +26,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // Supports pagination via ?pageNumber=1
         public async Task<IActionResult> Index(int? pageNumber)
         {
-            const int pageSize = 9; // change page size as required
+            const int pageSize = 6; // change page size as required
             var query = _context.CustomerDetail
                                 .AsNoTracking()
                                 .OrderBy(c => c.CustomerId)
@@ -75,21 +75,38 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if email or phone already exists
-                bool emailExists = await _context.CustomerDetail
-                    .AnyAsync(c => c.CustomerEmail == customerDetail.CustomerEmail);
+                // Only validate uniqueness when a value was provided
+                bool emailExists = false;
+                bool phoneExists = false;
 
-                bool phoneExists = await _context.CustomerDetail
-                    .AnyAsync(c => c.CustomerPhone == customerDetail.CustomerPhone);
-
-                if (emailExists)
+                if (!string.IsNullOrWhiteSpace(customerDetail.CustomerEmail))
                 {
-                    ModelState.AddModelError("CustomerEmail", "Email already exists.");
+                    var emailToCheck = customerDetail.CustomerEmail.Trim();
+                    emailExists = await _context.CustomerDetail
+                        .AnyAsync(c => c.CustomerEmail == emailToCheck);
+                    if (emailExists)
+                    {
+                        ModelState.AddModelError("CustomerEmail", "Email already exists.");
+                    }
+                    else
+                    {
+                        customerDetail.CustomerEmail = emailToCheck;
+                    }
                 }
 
-                if (phoneExists)
+                if (!string.IsNullOrWhiteSpace(customerDetail.CustomerPhone))
                 {
-                    ModelState.AddModelError("CustomerPhone", "Phone number already exists.");
+                    var phoneToCheck = customerDetail.CustomerPhone.Trim();
+                    phoneExists = await _context.CustomerDetail
+                        .AnyAsync(c => c.CustomerPhone == phoneToCheck);
+                    if (phoneExists)
+                    {
+                        ModelState.AddModelError("CustomerPhone", "Phone number already exists.");
+                    }
+                    else
+                    {
+                        customerDetail.CustomerPhone = phoneToCheck;
+                    }
                 }
 
                 if (!emailExists && !phoneExists)
@@ -97,7 +114,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                     _context.Add(customerDetail);
                     await _context.SaveChangesAsync();
 
-                    if (!string.IsNullOrEmpty(ReturnUrl))
+                    if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                     {
                         return Redirect(ReturnUrl);
                     }
@@ -106,6 +123,8 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 }
             }
 
+            // preserve return URL so the view can re-populate the hidden field
+            ViewBag.ReturnUrl = ReturnUrl;
             return View(customerDetail);
         }
 
@@ -138,6 +157,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             {
                 return NotFound();
             }
+
             var customerDetail = await _context.CustomerDetail.FindAsync(id);
             if (customerDetail == null)
             {
@@ -146,30 +166,72 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 
             if (ModelState.IsValid)
             {
-                // Only update the properties that are allowed to be edited
-                customerDetail.CustomerName = posted.CustomerName;
-                customerDetail.CustomerLastName = posted.CustomerLastName;
-                customerDetail.CustomerPhone = posted.CustomerPhone;
-                customerDetail.CustomerEmail = posted.CustomerEmail;
+                // Trim incoming values
+                posted.CustomerName = posted.CustomerName?.Trim();
+                posted.CustomerLastName = posted.CustomerLastName?.Trim();
+                posted.CustomerEmail = string.IsNullOrWhiteSpace(posted.CustomerEmail) ? null : posted.CustomerEmail.Trim();
+                posted.CustomerPhone = string.IsNullOrWhiteSpace(posted.CustomerPhone) ? null : posted.CustomerPhone.Trim();
 
-                try
+                // Validate uniqueness only when a value is provided, excluding current record
+                bool emailExists = false;
+                bool phoneExists = false;
+
+                if (!string.IsNullOrWhiteSpace(posted.CustomerEmail))
                 {
-                   
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CustomerDetailExists(customerDetail.CustomerId))
+                    emailExists = await _context.CustomerDetail
+                        .AnyAsync(c => c.CustomerEmail == posted.CustomerEmail && c.CustomerId != posted.CustomerId);
+
+                    if (emailExists)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        ModelState.AddModelError(nameof(posted.CustomerEmail), "Email already exists.");
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                if (!string.IsNullOrWhiteSpace(posted.CustomerPhone))
+                {
+                    phoneExists = await _context.CustomerDetail
+                        .AnyAsync(c => c.CustomerPhone == posted.CustomerPhone && c.CustomerId != posted.CustomerId);
+
+                    if (phoneExists)
+                    {
+                        ModelState.AddModelError(nameof(posted.CustomerPhone), "Phone number already exists.");
+                    }
+                }
+
+                if (!emailExists && !phoneExists)
+                {
+                    // Apply allowed updates
+                    customerDetail.CustomerName = posted.CustomerName;
+                    customerDetail.CustomerLastName = posted.CustomerLastName;
+                    customerDetail.CustomerPhone = posted.CustomerPhone;
+                    customerDetail.CustomerEmail = posted.CustomerEmail;
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!CustomerDetailExists(customerDetail.CustomerId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
+
+            // Ensure view shows the attempted changes so user doesn't lose input
+            customerDetail.CustomerName = posted.CustomerName;
+            customerDetail.CustomerLastName = posted.CustomerLastName;
+            customerDetail.CustomerPhone = posted.CustomerPhone;
+            customerDetail.CustomerEmail = posted.CustomerEmail;
+
             return View(customerDetail);
         }
 
