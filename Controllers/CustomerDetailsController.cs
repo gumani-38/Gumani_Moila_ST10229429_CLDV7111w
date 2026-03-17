@@ -70,24 +70,45 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-    [Bind("CustomerId,CustomerName,CustomerLastName,CustomerPhone,CustomerEmail,CreatedAt")] CustomerDetail customerDetail,
-    string ReturnUrl)
+           [Bind("CustomerId,CustomerName,CustomerLastName,CustomerPhone,CustomerEmail,CreatedAt")] CustomerDetail customerDetail,
+           string ReturnUrl)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(customerDetail);
-                await _context.SaveChangesAsync();
+                // Check if email or phone already exists
+                bool emailExists = await _context.CustomerDetail
+                    .AnyAsync(c => c.CustomerEmail == customerDetail.CustomerEmail);
 
-                if (!string.IsNullOrEmpty(ReturnUrl))
+                bool phoneExists = await _context.CustomerDetail
+                    .AnyAsync(c => c.CustomerPhone == customerDetail.CustomerPhone);
+
+                if (emailExists)
                 {
-                    return Redirect(ReturnUrl);
+                    ModelState.AddModelError("CustomerEmail", "Email already exists.");
                 }
 
-                return RedirectToAction(nameof(Index));
+                if (phoneExists)
+                {
+                    ModelState.AddModelError("CustomerPhone", "Phone number already exists.");
+                }
+
+                if (!emailExists && !phoneExists)
+                {
+                    _context.Add(customerDetail);
+                    await _context.SaveChangesAsync();
+
+                    if (!string.IsNullOrEmpty(ReturnUrl))
+                    {
+                        return Redirect(ReturnUrl);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
             return View(customerDetail);
         }
+
 
 
         // GET: CustomerDetails/Edit/5
