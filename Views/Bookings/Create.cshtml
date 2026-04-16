@@ -14,8 +14,9 @@
 
 <form asp-action="Create" class="w-full max-w-2xl mx-auto" method="post">
     @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-red-600 text-center"></div>
+           
     <p class="text-lg text-center font-medium mb-6">Create new booking</p>
+    <div asp-validation-summary="ModelOnly" class="text-red-600 text-center"></div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5"> 
         <div>
             <label asp-for="BookingDate" class="text-sm font-sm"></label>

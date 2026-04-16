@@ -181,6 +181,20 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var venue = await _context.Venue.FindAsync(id);
+           bool  hasExististingBookings = await _context.Booking.AnyAsync(b => b.VenueId == id);
+
+            if (hasExististingBookings)
+            {
+                // Prevent deletion and show an error message
+                ModelState.AddModelError(string.Empty, "Cannot delete venue that has existing bookings.");
+
+             
+                var venueWithUser = await _context.Venue
+                    .Include(v => v.user)   
+                    .FirstOrDefaultAsync(v => v.VenueId == id);
+
+                return View(venueWithUser ?? venue); 
+            }
             if (venue != null)
             {
                 _context.Venue.Remove(venue);
