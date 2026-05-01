@@ -24,21 +24,50 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Bookings
-        public async Task<IActionResult> Index(int? pageNumber)
+        public async Task<IActionResult> Index(string searchInput,string sortOrder,int? pageNumber)
         {
             const int pageSize = 9; // adjust as needed
-
             var query = _context.Booking
-                .Include(b => b.CustomerDetail)
-                .Include(b => b.Event)
-                .Include(b => b.User)
-                .Include(b => b.Venue)
-                .AsNoTracking()
-                .OrderByDescending(b => b.BookingDate)
-                .AsQueryable();
+                   .Include(b => b.CustomerDetail)
+                   .Include(b => b.Event)
+                   .Include(b => b.User)
+                   .Include(b => b.Venue)
+                   .AsNoTracking()
+                   .AsQueryable();
+
+            // ✅ Handle search input
+            if (!string.IsNullOrEmpty(searchInput))
+            {
+                // Try parse as date
+                if (DateTime.TryParse(searchInput, out DateTime parsedDate))
+                {
+                    query = query.Where(b => b.BookingDate.Date == parsedDate.Date);
+                }
+                else
+                {
+                    // Search by ID or name
+                    query = query.Where(b =>
+    b.BookingId.ToString().Contains(searchInput) ||
+    (b.CustomerDetail.CustomerName + " " + b.CustomerDetail.CustomerLastName)
+        .ToLower().Contains(searchInput.ToLower()) ||
+    b.Event.EventName.ToLower().Contains(searchInput.ToLower())
+);
+                }
+            }
+
+            // ✅ Handle sort options
+            query = sortOrder switch
+            {
+                "Oldest" => query.OrderBy(b => b.BookingDate),
+                "Most Recent" => query.OrderByDescending(b => b.BookingDate),
+                _ => query.OrderByDescending(b => b.BookingDate)
+            };
 
             var model = await PaginatedList<Gumani_Moila_ST10229429_CLDV7111w.Models.Booking>
                 .CreateAsync(query, pageNumber ?? 1, pageSize);
+            ViewData["CurrentSearch"] = searchInput;
+            ViewData["CurrentSort"] = sortOrder;
+
 
             return View(model);
         }

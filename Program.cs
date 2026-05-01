@@ -13,12 +13,10 @@ namespace Gumani_Moila_ST10229429_CLDV7111w
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Configuration.AddUserSecrets<Program>();
-            var connectionString = builder.Configuration["AzureBlobStorage"];
 
             builder.Services.AddDbContext<EventEaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("EventEaseContext")));
             // register azure blob storage service
-            builder.Services.AddSingleton(x=> new BlobServiceClient(builder.Configuration.GetConnectionString(connectionString)));
+            builder.Services.AddSingleton(x=> new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
      .AddCookie(options =>

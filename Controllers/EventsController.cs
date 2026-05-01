@@ -25,7 +25,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Events
-        public async Task<IActionResult> Index(int? pageNumber)
+        public async Task<IActionResult> Index(string searchInput,string sortOrder,int? pageNumber)
         {
             const int pageSize = 9; // adjust page size as needed
 
@@ -46,7 +46,31 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 .OrderByDescending(e => e.EventDate)
                 .AsQueryable();
 
+            // handle saerch input 
+            if(!string.IsNullOrEmpty(searchInput))
+            {
+                if (DateTime.TryParse(searchInput, out DateTime parsedDate))
+                {
+                    query = query.Where(e => e.EventDate.Date == parsedDate.Date);
+                }
+                else
+                {
+                    query = query.Where(e =>  e.EventId.ToString().Contains(searchInput) 
+                    || e.EventName.ToLower().Contains(searchInput.ToLower()));
+                }
+            }
+            // ✅ Handle sort options
+            query = sortOrder switch
+            {
+                "Oldest" => query.OrderBy(e => e.EventDate),
+                "Most Recent" => query.OrderByDescending(e => e.EventDate),
+                _ => query.OrderByDescending(e => e.EventDate)
+            };
+
+
             var model = await PaginatedList<Event>.CreateAsync(query, pageNumber ?? 1, pageSize);
+            ViewData["CurrentSearch"] = searchInput;
+            ViewData["CurrentSort"] = sortOrder;
             return View(model);
         }
 
