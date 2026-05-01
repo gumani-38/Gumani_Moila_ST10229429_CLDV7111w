@@ -14,8 +14,8 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
         public string VenueLocation { get; set; }
         [Required(ErrorMessage = "Venue capacity is required")]
         public int VenueCapacity { get; set; }
-      
-        public string? VenueImageUrl { get; set; }
+        [Required(ErrorMessage = "Venue image URL is required")]
+        public string VenueImageUrl { get; set; }
 
         // Default value set to current date/time
         [DisplayFormat(DataFormatString = "{0:dd MMM yy}")]

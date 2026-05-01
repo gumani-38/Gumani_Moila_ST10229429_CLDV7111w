@@ -13,7 +13,7 @@
 </div>
 
 
-<form asp-action="Create" class="w-full max-w-2xl mx-auto" method="post" enctype="multipart/form-data">
+<form asp-action="Create" class="w-full max-w-2xl mx-auto" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-red-600 text-center"></div>
     <p class="text-lg text-center font-medium mb-6">Create new venue</p>
@@ -33,13 +33,11 @@
             <input asp-for="VenueCapacity" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
             <span asp-validation-for="VenueCapacity" class="text-red-600"></span>
         </div>
-        <div>
-            <label for="venueImage" class="text-sm font-sm">Venue Image</label>
-            <input type="file" name="venueImage" id="venueImage"
-                   class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
-        </div>
-
-
+            <div>
+            <label asp-for="VenueImageUrl" class="text-sm font-sm"></label>
+            <input asp-for="VenueImageUrl" value="https://images.unsplash.com/photo-1772442126046-29faff1ad234?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMHx8fGVufDB8fHx8fA%3D%3D" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+            <span asp-validation-for="VenueImageUrl" class="text-red-600"></span>
+            </div>
     </div>
         <!-- Centered button -->
         <div class="flex justify-center mt-6">

@@ -1,7 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Storage.Sas;
-using Gumani_Moila_ST10229429_CLDV7111w.Data;
+﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
 using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -21,12 +18,10 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
     public class VenuesController : Controller
     {
         private readonly EventEaseContext _context;
-        private readonly BlobServiceClient _blobServiceClient;
 
-        public VenuesController(EventEaseContext context,BlobServiceClient blobServiceClient)
+        public VenuesController(EventEaseContext context)
         {
             _context = context;
-            _blobServiceClient = blobServiceClient;
         }
 
         // GET: Venues
@@ -80,66 +75,22 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-       [Bind("VenueId,VenueName,VenueLocation,VenueCapacity")] Venue venue,
-       IFormFile venueImage)
+        public async Task<IActionResult> Create([Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl,UserId")] Venue venue)
         {
-            // ✅ Safer user ID extraction
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                return Unauthorized();
+            // ✅ Middleware ensures only authenticated users reach here
+            // Grab the logged-in user's ID from session
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            venue.UserId = userId;
 
-            venue.UserId = int.Parse(userIdClaim.Value);
 
-            if (!ModelState.IsValid)
-                return View(venue);
-
-            if (venueImage != null && venueImage.Length > 0)
+            if (ModelState.IsValid)
             {
-                // ✅ Validate file type
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                var extension = Path.GetExtension(venueImage.FileName).ToLower();
-
-                if (!allowedExtensions.Contains(extension))
-                {
-                    ModelState.AddModelError("", "Only JPG and PNG files are allowed.");
-                    return View(venue);
-                }
-
-                // ✅ Validate file size (5MB max)
-                if (venueImage.Length > 5 * 1024 * 1024)
-                {
-                    ModelState.AddModelError("", "File size must be under 5MB.");
-                    return View(venue);
-                }
-
-                var containerClient = _blobServiceClient.GetBlobContainerClient("venueimages");
-
-                // ⚠️ No need to call CreateIfNotExists every time (optional to remove)
-                // await containerClient.CreateIfNotExistsAsync();
-
-                // ✅ Clean filename
-                string safeFileName = Path.GetFileName(venueImage.FileName);
-                string blobName = $"{Guid.NewGuid()}-{safeFileName}";
-
-                var blobClient = containerClient.GetBlobClient(blobName);
-
-                using var stream = venueImage.OpenReadStream();
-
-                // ✅ Set correct content type
-                await blobClient.UploadAsync(stream, new BlobHttpHeaders
-                {
-                    ContentType = venueImage.ContentType
-                });
-
-                // ✅ Store PUBLIC URL (NO SAS)
-                venue.VenueImageUrl = blobClient.Uri.ToString();
+                _context.Add(venue);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            _context.Add(venue);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
+            ViewData ["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", venue.UserId);
+            return View(venue);
         }
 
 
