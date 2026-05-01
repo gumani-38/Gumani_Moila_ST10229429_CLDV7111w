@@ -1,7 +1,6 @@
 ﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
 using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
-using Humanizer.Localisation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -188,19 +187,6 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var @event = await _context.Event.FindAsync(id);
-            bool hasExististingBookings = await _context.Booking.AnyAsync(b => b.EventId == id);
-
-            if (hasExististingBookings)
-            {
-                //  Prevent deletion and show an error message
-                ModelState.AddModelError(string.Empty, "Cannot delete event that has existing bookings.");
-
-                var eventWithVenue = await _context.Event
-                    .Include(e => e.Venue)
-                    .FirstOrDefaultAsync(m => m.EventId == id);
-
-                return View(eventWithVenue ?? @event);
-            }
             if (@event != null)
             {
                 _context.Event.Remove(@event);
