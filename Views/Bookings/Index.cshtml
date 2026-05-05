@@ -15,6 +15,23 @@
     </a>
     <a asp-action="Create" class="bg-blue-600 py-2 px-3 rounded text-white">Add booking</a>
 </div>
+@* // search box *@
+<form asp-action="Index" method="get" id="searchForm"
+      class="flex items-center flex-row gap-2 w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+    <input type="text" value="@ViewData["CurrentSearch"]" id="searchInput" name="searchInput"
+           placeholder="Search by id, event name,date, customer name..."
+           class="flex-1 outline-none" />
+    <div class="border-l-1 border-gray-300 pl-3">
+        <i class="fa-solid fa-sliders text-gray-400"></i>
+        <select id="sortOrder" name="sortOrder" class="outline-none focus:outline-none bg-transparent">
+            <option value="Default" selected="@(ViewData["CurrentSort"]?.ToString() == "Default")">Default</option>
+            <option value="Most Recent" selected="@(ViewData["CurrentSort"]?.ToString() == "Most Recent")">Most Recent</option>
+            <option value="Oldest" selected="@(ViewData["CurrentSort"]?.ToString() == "Oldest")">Oldest</option>
+
+        </select>
+    </div>
+</form>
+
 
 
 <div class="flex flex-wrap gap-3 justify-center p-6">
@@ -69,3 +86,45 @@
         }
     </div>
 }
+
+<script>
+    const searchInput = document.getElementById("searchInput");
+    const sortOrder = document.getElementById("sortOrder");
+    searchInput.addEventListener("blur", function () {
+        let val = searchInput.value.trim();
+        if (!val) return;
+
+        // Try to parse as date
+        let date = new Date(val);
+        if (!isNaN(date.getTime())) {
+            // Format as dd/MM/yyyy
+            let day = String(date.getDate()).padStart(2, '0');
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let year = date.getFullYear();
+            searchInput.value = `${day}/${month}/${year}`;
+        }
+    });
+    let typingTimer;
+    searchInput.addEventListener("input", function () {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+            fetch(`/Bookings/Index?searchInput=${encodeURIComponent(searchInput.value)}&sortOrder=${sortOrder.value}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector(".flex.flex-wrap").innerHTML =
+                        new DOMParser().parseFromString(html, "text/html")
+                        .querySelector(".flex.flex-wrap").innerHTML;
+                });
+        }, 500);
+    });
+
+    sortOrder.addEventListener("change", function () {
+        fetch(`/Bookings/Index?searchInput=${encodeURIComponent(searchInput.value)}&sortOrder=${sortOrder.value}`)
+            .then(response => response.text())
+            .then(html => {
+                document.querySelector(".flex.flex-wrap").innerHTML =
+                    new DOMParser().parseFromString(html, "text/html")
+                    .querySelector(".flex.flex-wrap").innerHTML;
+            });
+    });
+</script>

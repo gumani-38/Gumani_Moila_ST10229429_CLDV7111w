@@ -25,7 +25,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Venues
-            public async Task<IActionResult> Index(int? pageNumber)
+            public async Task<IActionResult> Index(string searchInput,string sortOrder,int? pageNumber)
             {
                 const int pageSize = 9; // adjust as needed
 
@@ -37,11 +37,35 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                     .AsNoTracking()
                     .OrderBy(v => v.VenueName)
                     .AsQueryable();
+            // handle saerch input
+            if(!string.IsNullOrEmpty(searchInput))
+            {
+                if (DateTime.TryParse(searchInput, out DateTime parsedDate))
+                {
+                    query = query.Where(v => v.CreatedAt.Date == parsedDate.Date);
+                }
+                else
+                {
+                    query = query.Where(v =>  v.VenueId.ToString().Contains(searchInput) 
+                    || v.VenueName.ToLower().Contains(searchInput.ToLower())
+                    || v.VenueLocation.ToLower().Contains(searchInput.ToLower()));
+                }
+            }
+             // ✅ Handle sort options
+             query = sortOrder switch
+             {
+              
+                 "Oldest" => query.OrderBy(v => v.CreatedAt),
+                 "Most Recent" => query.OrderByDescending(v => v.CreatedAt),
+                 _ => query.OrderBy(v => v.VenueName)
+             };
 
-                var model = await PaginatedList<Gumani_Moila_ST10229429_CLDV7111w.Models.Venue>
+            var model = await PaginatedList<Gumani_Moila_ST10229429_CLDV7111w.Models.Venue>
                     .CreateAsync(query, pageNumber ?? 1, pageSize);
+            ViewData["CurrentSearch"] = searchInput;
+            ViewData["CurrentSort"] = sortOrder;
 
-                return View(model);
+            return View(model);
             }
 
         // GET: Venues/Details/5
