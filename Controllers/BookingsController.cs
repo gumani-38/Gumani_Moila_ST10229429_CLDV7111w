@@ -128,7 +128,12 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 "DisplayName",
                 venueId // pre-select if provided
             );
+            // 🔑 Event → Venue mapping
+            var eventVenueMap = _context.Event
+                .Select(e => new { e.EventId, e.VenueId })
+                .ToList();
 
+            ViewBag.EventVenueMap = eventVenueMap;
             return View();
         }
         // POST: Bookings/Create

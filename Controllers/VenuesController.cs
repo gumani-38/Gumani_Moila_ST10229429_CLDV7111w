@@ -1,4 +1,5 @@
-﻿using Gumani_Moila_ST10229429_CLDV7111w.Data;
+﻿using Azure.Storage.Blobs;
+using Gumani_Moila_ST10229429_CLDV7111w.Data;
 using Gumani_Moila_ST10229429_CLDV7111w.Helpers;
 using Gumani_Moila_ST10229429_CLDV7111w.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -18,10 +19,12 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
     public class VenuesController : Controller
     {
         private readonly EventEaseContext _context;
+        private readonly BlobServiceClient _blobServiceClient;
 
-        public VenuesController(EventEaseContext context)
+        public VenuesController(EventEaseContext context, BlobServiceClient blobServiceClient)
         {
             _context = context;
+            _blobServiceClient = blobServiceClient;
         }
 
         // GET: Venues
@@ -99,24 +102,45 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl,UserId")] Venue venue)
+        public async Task<IActionResult> Create([Bind("VenueId,VenueName,VenueLocation,VenueCapacity")] Venue venue, IFormFile venueImage)
         {
-            // ✅ Middleware ensures only authenticated users reach here
-            // Grab the logged-in user's ID from session
+            // ✅ Ensure only authenticated users reach here
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             venue.UserId = userId;
 
+            if (venueImage == null || venueImage.Length == 0)
+            {
+                ModelState.AddModelError("VenueImageUrl", "Venue image is required.");
+            }
 
             if (ModelState.IsValid)
             {
+                if (venueImage != null && venueImage.Length > 0)
+                {
+                    // Get container reference
+                    var containerClient = _blobServiceClient.GetBlobContainerClient("venueimages");
+                    await containerClient.CreateIfNotExistsAsync();
+
+                    // Generate unique blob name
+                    string blobName = $"{Guid.NewGuid()}-{venueImage.FileName}";
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload file stream
+                    using var stream = venueImage.OpenReadStream();
+                    await blobClient.UploadAsync(stream, overwrite: true);
+
+                    // Save blob URL in VenueImageUrl
+                    venue.VenueImageUrl = blobClient.Uri.ToString();
+                }
+
                 _context.Add(venue);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData ["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", venue.UserId);
+
+            ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", venue.UserId);
             return View(venue);
         }
-
 
         // GET: Venues/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -140,7 +164,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VenueId,VenueName,VenueLocation,VenueCapacity,VenueImageUrl")] Venue posted)
+        public async Task<IActionResult> Edit(int id, [Bind("VenueId,VenueName,VenueLocation,VenueCapacity")] Venue posted,IFormFile venueImage)
         {
             if (id != posted.VenueId)
             {
@@ -158,7 +182,31 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 venue.VenueName = posted.VenueName;
                 venue.VenueLocation = posted.VenueLocation;
                 venue.VenueCapacity = posted.VenueCapacity;
-                venue.VenueImageUrl = posted.VenueImageUrl;
+                if (venueImage != null && venueImage.Length > 0)
+                {
+                    // Get container reference
+                    var containerClient = _blobServiceClient.GetBlobContainerClient("venueimages");
+                    await containerClient.CreateIfNotExistsAsync();
+                    // if the venue already has an image, delete the old one
+                    if(!string.IsNullOrEmpty(venue.VenueImageUrl))
+                    {
+                        var oldBlobName = new Uri(venue.VenueImageUrl).Segments.Last();
+                        var oldBlobClient = containerClient.GetBlobClient(oldBlobName);
+                        await oldBlobClient.DeleteIfExistsAsync();
+                    }
+
+                    // Generate unique blob name
+                    string blobName = $"{Guid.NewGuid()}-{venueImage.FileName}";
+                    var blobClient = containerClient.GetBlobClient(blobName);
+
+                    // Upload file stream
+                    using var stream = venueImage.OpenReadStream();
+                    await blobClient.UploadAsync(stream, overwrite: true);
+
+                    // Save blob URL in VenueImageUrl
+                    venue.VenueImageUrl = blobClient.Uri.ToString();
+                }
+
                 try
                 {
                     await _context.SaveChangesAsync();

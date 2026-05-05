@@ -11,7 +11,7 @@
         <span>Back</span>
     </a>
 </div>
-<form asp-action="Edit" class="w-full max-w-2xl mx-auto">
+<form asp-action="Edit" class="w-full max-w-2xl mx-auto" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-red-600 text-center"></div>
     <p class="text-lg text-center font-medium mb-6">Edit  user</p>
 
@@ -38,8 +38,8 @@
         </div>
       
         <div>
-            <label asp-for="VenueImageUrl" class="text-sm font-sm"></label>
-            <input asp-for="VenueImageUrl" placeholder="Enter first name" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+            <label class="text-sm font-sm">Venue Image</label>
+            <input type="file" name="venueImage" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
             <span asp-validation-for="VenueImageUrl" class="text-red-600"></span>
         </div>
           </div>
