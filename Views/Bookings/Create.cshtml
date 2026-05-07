@@ -2,7 +2,13 @@
 
 @{
     ViewData["Title"] = "Create";
+
+    var eventVenueMapJson =
+        System.Text.Json.JsonSerializer.Serialize(
+            ViewBag.EventVenueMap as object
+        );
 }
+
 <div class="w-full flex justify-start mb-20 px-4">
     <a href="javascript:history.back()"
        class="inline-flex items-center px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all shadow-sm">
@@ -11,74 +17,175 @@
     </a>
 </div>
 
+<form asp-action="Create"
+      method="post"
+      class="w-full max-w-2xl mx-auto">
 
-<form asp-action="Create" class="w-full max-w-2xl mx-auto" method="post">
     @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-red-600 text-center"></div>
-    <p class="text-lg text-center font-medium mb-6">Create new booking</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5"> 
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-red-600 text-center mb-4">
+    </div>
+
+    <p class="text-lg text-center font-medium mb-6">
+        Create new booking
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <!-- Booking Date -->
         <div>
-            <label asp-for="BookingDate" class="text-sm font-sm"></label>
-            <input asp-for="BookingDate" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
-            <span asp-validation-for="BookingDate" class="text-red-600"></span>
+            <label asp-for="BookingDate" class="text-sm font-medium"></label>
+
+            <input asp-for="BookingDate"
+                   class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+
+            <span asp-validation-for="BookingDate"
+                  class="text-red-600"></span>
         </div>
+
+        <!-- Venue -->
         <div>
-            <label asp-for="VenueId" class="text-sm font-sm"></label>
-            <select asp-for="VenueId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.VenueId" disabled></select>
-            <span asp-validation-for="VenueId" class="text-red-600"></span>
+            <label asp-for="VenueId" class="text-sm font-medium"></label>
+
+            <select asp-for="VenueId"
+                    id="VenueId"
+                    asp-items="ViewBag.VenueId"
+                    disabled
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all">
+            </select>
+
+            <!-- Hidden input gets submitted -->
+            <input type="hidden"
+                   asp-for="VenueId"
+                   id="HiddenVenueId" />
+
+            <span asp-validation-for="VenueId"
+                  class="text-red-600"></span>
         </div>
+
+        <!-- Event -->
         <div>
-            <label asp-for="EventId" class="text-sm font-sm"></label>
-            <select asp-for="EventId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.EventId"></select>
-            <span asp-validation-for="EventId" class="text-red-600"></span>
+            <label asp-for="EventId" class="text-sm font-medium"></label>
+
+            <select asp-for="EventId"
+                    id="EventId"
+                    asp-items="ViewBag.EventId"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all">
+
+                <option value="">-- Select Event --</option>
+            </select>
+
+            <span asp-validation-for="EventId"
+                  class="text-red-600"></span>
         </div>
+
+        <!-- Customer -->
         <div>
-            <label asp-for="CustomerId" class="text-sm font-sm"></label>
+            <label asp-for="CustomerId" class="text-sm font-medium"></label>
+
             <select asp-for="CustomerId"
                     id="CustomerId"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100"
-                    asp-items="ViewBag.CustomerId">
+                    asp-items="ViewBag.CustomerId"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100">
+
                 <option value="">-- Select Customer --</option>
             </select>
-            <span asp-validation-for="CustomerId" class="text-red-600"></span>
 
-            <!-- Add new customer link -->
+            <span asp-validation-for="CustomerId"
+                  class="text-red-600"></span>
+
             <div class="mt-2">
-                <a asp-controller="CustomerDetails" asp-action="Create"
+                <a asp-controller="CustomerDetails"
+                   asp-action="Create"
                    class="text-blue-600 text-sm hover:underline">
+
                     + Add New Customer
                 </a>
             </div>
         </div>
-        </div>
 
-    <!-- Centered button -->
-    <div class="flex justify-center mt-6">
-        <input type="submit" value="Create" class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all" />
     </div>
-        </form>
 
+    <!-- Submit -->
+    <div class="flex justify-center mt-6">
+        <input type="submit"
+               value="Create"
+               class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all cursor-pointer" />
+    </div>
+
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
+
+        // Customer dropdown enhancement
         new TomSelect('#CustomerId', {
             placeholder: "-- Select Customer --",
             allowEmptyOption: true
         });
-         const eventVenueMap = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.EventVenueMap));
 
-        document.getElementById("EventId").addEventListener("change", function () {
-            const selectedEventId = parseInt(this.value);
-            const mapping = eventVenueMap.find(ev => ev.EventId === selectedEventId);
+        // Event -> Venue mapping
+        const eventVenueMap = @Html.Raw(eventVenueMapJson);
 
+        // Elements
+        const eventSelect = document.getElementById("EventId");
+        const venueSelect = document.getElementById("VenueId");
+        const hiddenVenueInput = document.getElementById("HiddenVenueId");
+
+        // Sync venue with selected event
+               function syncVenue(eventId) {
+
+            // Stop if empty
+            if (!eventId) {
+                return;
+            }
+
+            // Convert safely
+            eventId = parseInt(eventId);
+
+            if (isNaN(eventId)) {
+                return;
+            }
+
+            // Find matching mapping
+            const mapping = eventVenueMap.find(
+                ev => ev.EventId == eventId
+            );
+
+            // Only update if mapping exists
             if (mapping) {
-                document.getElementById("VenueId").value = mapping.VenueId;
+
+                console.log("Matched Venue:", mapping.VenueId);
+
+                // Update visible dropdown
+                venueSelect.value = mapping.VenueId;
+
+                // Update hidden input
+                hiddenVenueInput.value = mapping.VenueId;
+            }
+        }
+
+        // When event changes
+        eventSelect.addEventListener("change", function () {
+
+            syncVenue(this.value);
+        });
+
+        // Run on page load
+             window.addEventListener("DOMContentLoaded", function () {
+
+            // Keep existing values after validation errors
+            if (eventSelect.value !== "") {
+
+                syncVenue(eventSelect.value);
             }
         });
+
     </script>
-
-
-
 }

@@ -170,6 +170,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             {
                 return NotFound();
             }
+            // validate the images format 
 
             // load tracked entity so we don't have to worry about updating the UserId
             var venue = await _context.Venue.FindAsync(id);
@@ -252,7 +253,22 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var venue = await _context.Venue.FindAsync(id);
+            var venue = await _context.Venue
+       .Include(v => v.user).FirstOrDefaultAsync(v => v.VenueId == id);
+
+            if (venue == null)
+            {
+
+                return NotFound();
+            }
+            // prevent the deletion of venue if it has booking
+            bool hasBookings = await _context.Booking.AnyAsync(m => m.VenueId == venue.VenueId);
+            if (hasBookings)
+            {
+                ModelState.AddModelError(string.Empty, "This venue cannot be deleted because it has existing bookings.");
+                return View(venue);
+            }
+
             if (venue != null)
             {
                 _context.Venue.Remove(venue);

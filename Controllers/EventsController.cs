@@ -211,14 +211,29 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var @event = await _context.Event.FindAsync(id);
-            if (@event != null)
+
+            if (@event == null)
             {
-                _context.Event.Remove(@event);
+                return NotFound();
             }
 
+            // Prevent deletion if there are existing bookings
+            bool hasBookings = await _context.Booking
+                .AnyAsync(b => b.EventId == @event.EventId);
+
+            if (hasBookings)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "This event cannot be deleted because it has existing bookings.");
+                return View(@event); 
+            }
+
+            _context.Event.Remove(@event);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool EventExists(int id)
         {

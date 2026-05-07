@@ -146,21 +146,15 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
             // ✅ Middleware ensures only authenticated users reach here
             // Grab the logged-in user's ID from session
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            booking.UserId = userId;
+            // veiw data 
 
-            booking.UserId = userId; 
-            if (ModelState.IsValid)
-            {
-               
-                _context.Add(booking);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
             ViewData["CustomerId"] = new SelectList(_context.CustomerDetail.Select(v => new
             {
                 v.CustomerId,
                 DisplayName = v.CustomerName + " " + v.CustomerLastName + "- " + v.CustomerPhone
 
-            }), "CustomerId", "DisplayName",booking.CustomerId);
+            }), "CustomerId", "DisplayName", booking.CustomerId);
             ViewData["EventId"] = new SelectList(_context.Event, "EventId", "EventName", booking.EventId);
             ViewData["UserId"] = new SelectList(_context.User, "UserId", "UserEmail", booking.UserId);
             ViewData["VenueId"] = new SelectList(
@@ -173,6 +167,27 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 "DisplayName",
                 booking.VenueId
             );
+            // prevent the user from double  booking for the same venue and date 
+            bool isDoubleBooking = await _context.Booking
+                .AnyAsync(b => b.VenueId == booking.VenueId &&
+                               b.BookingDate == booking.BookingDate);
+
+            if (isDoubleBooking)
+            {
+                ModelState.AddModelError(string.Empty, "This venue is already booked for the selected date. Please choose another date or venue.");
+                return View(booking);
+            }
+
+
+
+            if (ModelState.IsValid)
+            {
+               
+                _context.Add(booking);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+          
 
             return View(booking);
         }
