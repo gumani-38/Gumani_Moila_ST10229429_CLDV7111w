@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Models
 {
+
+
     public class Venue
     {
         [Key]
@@ -25,6 +27,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
 
         // Navigation property for the foreign key
         public User? user { get; set; }
+
 
     }
 }

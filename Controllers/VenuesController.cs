@@ -183,6 +183,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 venue.VenueName = posted.VenueName;
                 venue.VenueLocation = posted.VenueLocation;
                 venue.VenueCapacity = posted.VenueCapacity;
+            
                 if (venueImage != null && venueImage.Length > 0)
                 {
                     // Get container reference

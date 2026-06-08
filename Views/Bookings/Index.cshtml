@@ -17,22 +17,65 @@
 </div>
 @* // search box *@
 <form asp-action="Index" method="get" id="searchForm"
-      class="max-w-2xl mx-auto flex items-center flex-row gap-2 w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
-    <input type="text" value="@ViewData["CurrentSearch"]" id="searchInput" name="searchInput"
-           placeholder="Search by id, event name,date, customer name..."
-           class="flex-1 outline-none" />
-    <div class="border-l-1 border-gray-300 pl-3">
-        <i class="fa-solid fa-sliders text-gray-400"></i>
-        <select id="sortOrder" name="sortOrder" class="outline-none focus:outline-none bg-transparent">
-            <option value="Default" selected="@(ViewData["CurrentSort"]?.ToString() == "Default")">Default</option>
-            <option value="Most Recent" selected="@(ViewData["CurrentSort"]?.ToString() == "Most Recent")">Most Recent</option>
-            <option value="Oldest" selected="@(ViewData["CurrentSort"]?.ToString() == "Oldest")">Oldest</option>
+      class="max-w-3xl mx-auto flex flex-col gap-4 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
 
+    <!-- Text search -->
+    <div class="flex items-center gap-2">
+        <input type="text" value="@ViewData["CurrentSearch"]" id="searchInput" name="searchInput"
+               placeholder="Search by id, event name, customer name..."
+               class="flex-1 px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" />
+    </div>
+
+    <!-- Filters row -->
+    <div class="flex flex-wrap items-center gap-4">
+        <!-- Event type filter -->
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-filter text-gray-400"></i>
+            <select id="eventTypeFilter" name="eventTypeFilter"
+                    class="px-2 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none">
+                <option value="">All Event Types</option>
+                @foreach (var type in Enum.GetValues(typeof(Event.EventCategory)).Cast<Event.EventCategory>())
+                {
+                    <option value="@type" selected="@(ViewData["EventTypeFilter"]?.ToString() == type.ToString())">@type</option>
+                }
+            </select>
+        </div>
+
+        <!-- Availability filter -->
+        <select id="availabilityFilter" name="availabilityFilter"
+                class="px-2 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none">
+            <option value="">All</option>
+            <option value="Available" selected="@(ViewData["AvailabilityFilter"]?.ToString() == "Available")">Available</option>
+            <option value="Unavailable" selected="@(ViewData["AvailabilityFilter"]?.ToString() == "Unavailable")">Unavailable</option>
         </select>
+
+        <!-- Date range filter -->
+        <div class="flex items-center gap-2">
+            <label for="fromDate" class="text-sm text-gray-600">From</label>
+            <input type="date" id="fromDate" name="fromDate"
+                   value="@ViewData["FromDate"]"
+                   class="px-2 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none" />
+
+            <label for="toDate" class="text-sm text-gray-600">To</label>
+            <input type="date" id="toDate" name="toDate"
+                   value="@ViewData["ToDate"]"
+                   class="px-2 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none" />
+        </div>
+
+        <!-- Sort order -->
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-gray-400"></i>
+            <select id="sortOrder" name="sortOrder"
+                    class="px-2 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none">
+                <option value="Default" selected="@(ViewData["CurrentSort"]?.ToString() == "Default")">Default</option>
+                <option value="Most Recent" selected="@(ViewData["CurrentSort"]?.ToString() == "Most Recent")">Most Recent</option>
+                <option value="Oldest" selected="@(ViewData["CurrentSort"]?.ToString() == "Oldest")">Oldest</option>
+            </select>
+        </div>
     </div>
 </form>
 
-
+<div id="resultsContainer">
 
 <div class="flex flex-wrap gap-3 justify-center p-6">
 @foreach (var item in Model) {
@@ -49,8 +92,16 @@
               @* <p class="text-sm "> @Html.DisplayFor(modelItem => item.Event.EventDate)</p> *@
             <p class="text-gray-700 text-sm">@Html.DisplayFor(modelItem => item.Event.EventDescription)</p>
 
-                        <p class="text-sm font-normal capitalize">@Html.DisplayFor(modelItem => item.CustomerDetail.CustomerName) @Html.DisplayFor(modelItem => item.CustomerDetail.CustomerLastName) - @Html.DisplayFor(modelItem => item.CustomerDetail.CustomerPhone)</p>
-            <div class=" flex items-center justify-between">
+            <p class="text-sm font-normal capitalize">@Html.DisplayFor(modelItem => item.CustomerDetail.CustomerName) @Html.DisplayFor(modelItem => item.CustomerDetail.CustomerLastName) - @Html.DisplayFor(modelItem => item.CustomerDetail.CustomerPhone)</p>
+        <div class="flex flex-row justify-between align-items-center">
+            <p class="text-sm font-medium"> Event Type: @Html.DisplayFor(modelItem => item.Event.EventType)</p>
+         @* // available badge *@
+            <div class="text-xs font-medium px-2 py-1 rounded-full @(item.Event.IsAvailable ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")">
+                            @(item.Event.IsAvailable ? "Available" : "Unavailable")
+                        </div>
+
+            </div>
+                        <div class=" flex items-center justify-between">
                 <a asp-action="Edit" class="text-blue-600 text-sm" asp-route-id="@item.BookingId"><i class="fa-regular fa-pen-to-square"></i></a>
                 @* <a asp-action="Details" asp-route-id="@item.UserId">Details</a> | *@
                 <a asp-action="Delete" class="text-red-600 text-sm" asp-route-id="@item.BookingId"><i class="fa-regular fa-trash-can"></i></a>
@@ -86,45 +137,55 @@
         }
     </div>
 }
-
+</div>
 <script>
     const searchInput = document.getElementById("searchInput");
     const sortOrder = document.getElementById("sortOrder");
-    searchInput.addEventListener("blur", function () {
-        let val = searchInput.value.trim();
-        if (!val) return;
+    const eventTypeFilter = document.getElementById("eventTypeFilter");
+    const availabilityFilter = document.getElementById("availabilityFilter");
+    const fromDate = document.getElementById("fromDate");
+    const toDate = document.getElementById("toDate");
 
-        // Try to parse as date
-        let date = new Date(val);
-        if (!isNaN(date.getTime())) {
-            // Format as dd/MM/yyyy
-            let day = String(date.getDate()).padStart(2, '0');
-            let month = String(date.getMonth() + 1).padStart(2, '0');
-            let year = date.getFullYear();
-            searchInput.value = `${day}/${month}/${year}`;
-        }
-    });
+    // Build query string with all filters
+    function buildQuery() {
+        return `/Bookings/Index?searchInput=${encodeURIComponent(searchInput.value)}`
+             + `&sortOrder=${encodeURIComponent(sortOrder.value)}`
+             + `&eventTypeFilter=${encodeURIComponent(eventTypeFilter.value)}`
+             + `&availabilityFilter=${encodeURIComponent(availabilityFilter.value)}`
+             + `&fromDate=${encodeURIComponent(fromDate.value)}`
+             + `&toDate=${encodeURIComponent(toDate.value)}`;
+    }
+
+    // Update results safely
+    function updateResults() {
+        fetch(buildQuery())
+            .then(response => response.text())
+            .then(html => {
+                const parsed = new DOMParser().parseFromString(html, "text/html");
+                const newResults = parsed.getElementById("resultsContainer");
+                const currentResults = document.getElementById("resultsContainer");
+
+                if (newResults && currentResults) {
+                    currentResults.innerHTML = newResults.innerHTML;
+                } else {
+                    console.warn("resultsContainer not found in response");
+                }
+            })
+            .catch(err => console.error("Update failed:", err));
+    }
+
+    // Auto-search after typing (debounced)
     let typingTimer;
     searchInput.addEventListener("input", function () {
         clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => {
-            fetch(`/Bookings/Index?searchInput=${encodeURIComponent(searchInput.value)}&sortOrder=${sortOrder.value}`)
-                .then(response => response.text())
-                .then(html => {
-                    document.querySelector(".flex.flex-wrap").innerHTML =
-                        new DOMParser().parseFromString(html, "text/html")
-                        .querySelector(".flex.flex-wrap").innerHTML;
-                });
-        }, 500);
+        typingTimer = setTimeout(updateResults, 500);
     });
 
-    sortOrder.addEventListener("change", function () {
-        fetch(`/Bookings/Index?searchInput=${encodeURIComponent(searchInput.value)}&sortOrder=${sortOrder.value}`)
-            .then(response => response.text())
-            .then(html => {
-                document.querySelector(".flex.flex-wrap").innerHTML =
-                    new DOMParser().parseFromString(html, "text/html")
-                    .querySelector(".flex.flex-wrap").innerHTML;
-            });
+    // Refresh results when filters change
+    [sortOrder, eventTypeFilter, availabilityFilter, fromDate, toDate].forEach(el => {
+        el.addEventListener("change", updateResults);
     });
 </script>
+
+
+

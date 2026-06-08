@@ -16,7 +16,16 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Data
     public DbSet<User> User { get; set; }
 
     public DbSet<CustomerDetail> CustomerDetail { get; set; }
-}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Event>()
+                .Property(v => v.EventType)
+                .HasConversion<string>(); // ✅ Store enum as string
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+    }
 
 
 }

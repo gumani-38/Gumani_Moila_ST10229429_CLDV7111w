@@ -1,11 +1,22 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Gumani_Moila_ST10229429_CLDV7111w.Models.Venue;
 
 namespace Gumani_Moila_ST10229429_CLDV7111w.Models
 {
     public class Event
     {
+        public enum EventCategory
+        {
+            Conference,
+            Wedding,
+            Birthday,
+            Concert,
+            Workshop,
+            Other
+        }
+
         [Key]
         public int EventId { get; set; }
 
@@ -28,6 +39,13 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Models
         [DisplayFormat(DataFormatString = "{0:dd MMM yy}")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        // ✅ Enum property for predefined categories
+        [Required(ErrorMessage = "Event type is required")]
+        public EventCategory EventType { get; set; }
+
+        // ✅ Availability flag
+        [Display(Name = "Available")]
+        public bool IsAvailable { get; set; } = true;
         // Navigation property for the foreign key
         public Venue? Venue { get; set; }
         public User? User { get; set; }

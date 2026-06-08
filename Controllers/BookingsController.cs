@@ -24,38 +24,65 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Bookings
-        public async Task<IActionResult> Index(string searchInput,string sortOrder,int? pageNumber)
+        public async Task<IActionResult> Index(
+     string searchInput,
+     string sortOrder,
+     int? pageNumber,
+     string eventTypeFilter,
+     string availabilityFilter,
+     DateTime? fromDate,
+     DateTime? toDate)
         {
-            const int pageSize = 9; // adjust as needed
+            const int pageSize = 9;
             var query = _context.Booking
-                   .Include(b => b.CustomerDetail)
-                   .Include(b => b.Event)
-                   .Include(b => b.User)
-                   .Include(b => b.Venue)
-                   .AsNoTracking()
-                   .AsQueryable();
+                .Include(b => b.CustomerDetail)
+                .Include(b => b.Event)
+                .Include(b => b.User)
+                .Include(b => b.Venue)
+                .AsNoTracking()
+                .AsQueryable();
 
-            // ✅ Handle search input
+            // Handling text search
             if (!string.IsNullOrEmpty(searchInput))
             {
-                // Try parse as date
                 if (DateTime.TryParse(searchInput, out DateTime parsedDate))
                 {
                     query = query.Where(b => b.BookingDate.Date == parsedDate.Date);
                 }
                 else
                 {
-                    // Search by ID or name
                     query = query.Where(b =>
-    b.BookingId.ToString().Contains(searchInput) ||
-    (b.CustomerDetail.CustomerName + " " + b.CustomerDetail.CustomerLastName)
-        .ToLower().Contains(searchInput.ToLower()) ||
-    b.Event.EventName.ToLower().Contains(searchInput.ToLower())
-);
+                        b.BookingId.ToString().Contains(searchInput) ||
+                        (b.CustomerDetail.CustomerName + " " + b.CustomerDetail.CustomerLastName)
+                            .ToLower().Contains(searchInput.ToLower()) ||
+                        b.Event.EventName.ToLower().Contains(searchInput.ToLower()));
                 }
             }
 
-            // ✅ Handle sort options
+            // Handlling event type filter
+            if (!string.IsNullOrEmpty(eventTypeFilter))
+            {
+                query = query.Where(b => b.Event.EventType.ToString() == eventTypeFilter);
+            }
+
+            // Handlling  availability filter
+            if (!string.IsNullOrEmpty(availabilityFilter))
+            {
+                bool isAvailable = availabilityFilter == "Available";
+                query = query.Where(b => b.Event.IsAvailable == isAvailable);
+            }
+
+            // Handlling date range filter
+            if (fromDate.HasValue)
+            {
+                query = query.Where(b => b.BookingDate >= fromDate.Value);
+            }
+            if (toDate.HasValue)
+            {
+                query = query.Where(b => b.BookingDate <= toDate.Value);
+            }
+
+            // Handlling sort options
             query = sortOrder switch
             {
                 "Oldest" => query.OrderBy(b => b.BookingDate),
@@ -65,12 +92,18 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
 
             var model = await PaginatedList<Gumani_Moila_ST10229429_CLDV7111w.Models.Booking>
                 .CreateAsync(query, pageNumber ?? 1, pageSize);
+
+            // Pass filters back to view
             ViewData["CurrentSearch"] = searchInput;
             ViewData["CurrentSort"] = sortOrder;
-
+            ViewData["EventTypeFilter"] = eventTypeFilter;
+            ViewData["AvailabilityFilter"] = availabilityFilter;
+            ViewData["FromDate"] = fromDate?.ToString("yyyy-MM-dd");
+            ViewData["ToDate"] = toDate?.ToString("yyyy-MM-dd");
 
             return View(model);
         }
+
 
         // GET: Bookings/Details/5
         public async Task<IActionResult> Details(int? id)

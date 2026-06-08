@@ -24,7 +24,13 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         }
 
         // GET: Events
-        public async Task<IActionResult> Index(string searchInput,string sortOrder,int? pageNumber)
+        public async Task<IActionResult> Index(string searchInput,
+     string sortOrder,
+     int? pageNumber,
+     string eventTypeFilter,
+     string availabilityFilter,
+     DateTime? fromDate,
+     DateTime? toDate)
         {
             const int pageSize = 9; // adjust page size as needed
 
@@ -36,6 +42,9 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                     EventName = e.EventName,
                     EventDescription = e.EventDescription,
                     EventDate = e.EventDate,
+                    EventType = e.EventType,
+                    IsAvailable = e.IsAvailable,
+                        UserId = e.UserId,
                     VenueId = e.VenueId,
                     CreatedAt = e.CreatedAt,
                     Venue = e.Venue,
@@ -45,20 +54,46 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
                 .OrderByDescending(e => e.EventDate)
                 .AsQueryable();
 
-            // handle saerch input 
-            if(!string.IsNullOrEmpty(searchInput))
+            // Handling text search
+            if (!string.IsNullOrEmpty(searchInput))
             {
                 if (DateTime.TryParse(searchInput, out DateTime parsedDate))
                 {
-                    query = query.Where(e => e.EventDate.Date == parsedDate.Date);
+                    query = query.Where(b => b.EventDate.Date == parsedDate.Date);
                 }
                 else
                 {
-                    query = query.Where(e =>  e.EventId.ToString().Contains(searchInput) 
-                    || e.EventName.ToLower().Contains(searchInput.ToLower()));
+                    query = query.Where(b =>
+                        b.EventId.ToString().Contains(searchInput) ||
+                        b.Venue.VenueName.ToLower().Contains(searchInput.ToLower()) ||
+                        b.Venue.VenueLocation.ToLower().Contains(searchInput.ToLower()) ||
+                       b.EventName.ToLower().Contains(searchInput.ToLower()));
                 }
             }
-            // ✅ Handle sort options
+
+            // Handlling event type filter
+            if (!string.IsNullOrEmpty(eventTypeFilter))
+            {
+                query = query.Where(b => b.EventType.ToString() == eventTypeFilter);
+            }
+
+            // ✅ Handle availability filter
+            if (!string.IsNullOrEmpty(availabilityFilter))
+            {
+                bool isAvailable = availabilityFilter == "Available";
+                query = query.Where(b => b.IsAvailable == isAvailable);
+            }
+
+            // ✅ Handle date range filter
+            if (fromDate.HasValue)
+            {
+                query = query.Where(b => b.EventDate >= fromDate.Value);
+            }
+            if (toDate.HasValue)
+            {
+                query = query.Where(b => b.EventDate <= toDate.Value);
+            }
+
             query = sortOrder switch
             {
                 "Oldest" => query.OrderBy(e => e.EventDate),
@@ -113,7 +148,7 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt,UserId")] Event @event)
+        public async Task<IActionResult> Create([Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt,UserId,EventType,IsAvailable")] Event @event)
         {
             @event.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
@@ -155,8 +190,9 @@ namespace Gumani_Moila_ST10229429_CLDV7111w.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("EventId,EventName,EventDescription,EventDate,VenueId,CreatedAt,EventType,IsAvailable")] Event @event)
         {
+            @event.UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (id != @event.EventId)
             {
                 return NotFound();

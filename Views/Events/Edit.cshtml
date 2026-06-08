@@ -40,6 +40,18 @@
             <select asp-for="VenueId" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="ViewBag.VenueId"></select>
                 <span asp-validation-for="VenueId" class="text-red-600"></span>
             </div>
+        <div>
+            <label asp-for="EventType" class="text-sm font-sm"></label>
+            <select asp-for="EventType" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" asp-items="Html.GetEnumSelectList<Gumani_Moila_ST10229429_CLDV7111w.Models.Event.EventCategory>()">
+            </select>
+            <span asp-validation-for="EventType" class="text-red-600"></span>
+        </div>
+        <div>
+            <label asp-for="IsAvailable" class="text-sm font-sm"></label>
+            <input asp-for="IsAvailable" type="checkbox"
+                   class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-600" />
+            <span asp-validation-for="IsAvailable" class="text-red-600"></span>
+        </div>
   
  
          </div>
